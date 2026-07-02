@@ -12,7 +12,6 @@ import {
   TrendingUp, 
   Package, 
   DollarSign, 
-  ShoppingBag as CartIcon, 
   X, 
   ArrowLeft,
   ChevronRight,
@@ -38,6 +37,9 @@ import {
   Smartphone,
   ChevronDown
 } from 'lucide-react';
+
+// Use ShoppingBag as the CartIcon internally to avoid duplicate import keys
+const CartIcon = ShoppingBag;
 
 // Starting Mock Data for Products
 const INITIAL_PRODUCTS = [
@@ -131,6 +133,7 @@ export default function App() {
   
   // Mobile check
   const [isMobile, setIsMobile] = useState(false);
+  const [mobileActiveTab, setMobileActiveTab] = useState('home');
 
   // Monitor Window Resize
   useEffect(() => {
@@ -326,7 +329,7 @@ export default function App() {
         total: totalOrderValue,
         status: 'Processing', // 'Processing', 'Shipped', 'Delivered'
         date: new Date().toLocaleDateString(),
-        estimatedArrival: new Date(Date.now() + (3 * 24 * 60 * 60 * 1000)).toLocaleDateString() // +3 days
+        estimatedArrival: new Date(Date.now() + (3 * 24 * 60 * 60 * 1000)).toLocaleString() // +3 days
       };
       setMyOrders(prev => [newOrder, ...prev]);
 
@@ -677,7 +680,7 @@ export default function App() {
                 <select
                   value={fpxBank}
                   onChange={(e) => setFpxBank(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 appearance-none shadow-sm font-medium text-gray-700"
+                  className="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 appearance-none shadow-sm font-medium text-gray-700 text-gray-800"
                 >
                   <option value="mbb">Maybank2u / Maybank</option>
                   <option value="cimb">CIMB Clicks</option>
@@ -715,7 +718,7 @@ export default function App() {
                     placeholder="123456789"
                     value={ewalletPhone}
                     onChange={(e) => setEwalletPhone(e.target.value)}
-                    className="flex-1 px-3.5 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 bg-white shadow-sm font-semibold"
+                    className="flex-1 px-3.5 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 bg-white shadow-sm font-semibold text-gray-800"
                   />
                 </div>
               </div>
@@ -855,7 +858,7 @@ export default function App() {
                     <span className="bg-gray-900 text-white text-[9px] px-1.5 py-0.5 rounded">{String(countdown.secs).padStart(2, '0')}</span>
                   </div>
                 </div>
-                <span className="text-[10px] text-orange-600 font-semibold flex items-center">All deals <ChevronRight className="w-3 h-3" /></span>
+                <span className="text-[10px] text-orange-600 font-semibold flex items-center">All deals <ChevronRight className="w-3.5 h-3.5" /></span>
               </div>
 
               {/* Categories Pills */}
@@ -967,7 +970,7 @@ export default function App() {
                 placeholder="e.g. noise-canceling, RGB lights, soft leather cushions, 1 year warranty"
                 value={aiPrompt}
                 onChange={(e) => setAiPrompt(e.target.value)}
-                className="w-full p-2.5 border rounded-lg text-xs focus:outline-none focus:border-orange-500 font-medium"
+                className="w-full p-2.5 border rounded-lg text-xs focus:outline-none focus:border-orange-500 font-medium bg-white text-gray-800"
                 rows="3"
               ></textarea>
 
@@ -993,12 +996,12 @@ export default function App() {
                 <div className="bg-gray-50 p-3 rounded border border-gray-100 text-xs mt-3">
                   <div className="font-bold text-gray-700 mb-1.5 border-b pb-1 flex justify-between items-center">
                     <span>Generated Output:</span>
-                    <button className="text-[#f53d2d] font-bold" onClick={() => {
+                    <button className="text-[#f53d2d] font-bold bg-transparent border-none p-0 cursor-pointer" onClick={() => {
                       navigator.clipboard.writeText(newProdDescription);
                       alertToast("Copied description to clipboard!");
                     }}>Copy</button>
                   </div>
-                  <pre className="font-mono text-[10px] whitespace-pre-wrap leading-relaxed text-gray-600 max-h-40 overflow-y-auto">{newProdDescription}</pre>
+                  <pre className="font-mono text-[10px] whitespace-pre-wrap leading-relaxed text-gray-600 max-h-40 overflow-y-auto bg-white p-2.5 rounded">{newProdDescription}</pre>
                 </div>
               )}
             </div>
@@ -1045,7 +1048,7 @@ export default function App() {
                       <input 
                         type="text" 
                         placeholder="e.g. SSM-20261022-A"
-                        className="w-full px-3 py-1.5 border rounded text-xs focus:outline-none bg-white"
+                        className="w-full px-3 py-1.5 border rounded text-xs focus:outline-none bg-white text-gray-800"
                         value={sellerIdNumber}
                         onChange={(e) => setSellerIdNumber(e.target.value)}
                       />
@@ -1090,7 +1093,7 @@ export default function App() {
                       <input 
                         type="text" 
                         placeholder="Product Name"
-                        className="w-full px-2.5 py-1.5 border rounded bg-white"
+                        className="w-full px-2.5 py-1.5 border rounded bg-white text-gray-800"
                         value={newProdName}
                         onChange={(e) => setNewProdName(e.target.value)}
                       />
@@ -1098,14 +1101,14 @@ export default function App() {
                         <input 
                           type="number" 
                           placeholder="Price (RM)"
-                          className="w-full px-2.5 py-1.5 border rounded bg-white"
+                          className="w-full px-2.5 py-1.5 border rounded bg-white text-gray-800"
                           value={newProdPrice}
                           onChange={(e) => setNewProdPrice(e.target.value)}
                         />
                         <input 
                           type="number" 
                           placeholder="Stock Level"
-                          className="w-full px-2.5 py-1.5 border rounded bg-white"
+                          className="w-full px-2.5 py-1.5 border rounded bg-white text-gray-800"
                           value={newProdStock}
                           onChange={(e) => setNewProdStock(e.target.value)}
                         />
@@ -1148,9 +1151,9 @@ export default function App() {
                     onClick={() => {
                       setCurrentUser(null);
                       setCart([]);
-                      alertToast("Logged out successfully.");
+                      alertToast("Logout successful.");
                     }}
-                    className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs py-2 rounded transition"
+                    className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs py-2 rounded transition border-none cursor-pointer"
                   >
                     Logout Account
                   </button>
@@ -1164,13 +1167,13 @@ export default function App() {
                   <div className="mt-4 flex flex-col gap-2">
                     <button 
                       onClick={() => { setAuthMode('login'); setShowAuthModal(true); }}
-                      className="bg-[#f53d2d] text-white font-bold text-xs py-2.5 rounded-lg shadow"
+                      className="bg-[#f53d2d] text-white font-bold text-xs py-2.5 rounded-lg shadow border-none cursor-pointer"
                     >
                       Login Account
                     </button>
                     <button 
                       onClick={() => { setAuthMode('register'); setShowAuthModal(true); }}
-                      className="bg-gray-100 text-gray-700 font-bold text-xs py-2.5 rounded-lg border border-gray-200"
+                      className="bg-gray-100 text-gray-700 font-bold text-xs py-2.5 rounded-lg border border-gray-200 cursor-pointer"
                     >
                       Register Profile
                     </button>
@@ -1186,35 +1189,35 @@ export default function App() {
         <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-xl flex items-center justify-around py-2.5 px-2">
           <button 
             onClick={() => { setMobileActiveTab('home'); setCurrentTab('buyer'); }}
-            className={`flex flex-col items-center gap-1 transition-all ${mobileActiveTab === 'home' ? 'text-[#f53d2d] scale-105' : 'text-gray-400'}`}
+            className={`flex flex-col items-center gap-1 transition-all bg-transparent border-none cursor-pointer ${mobileActiveTab === 'home' ? 'text-[#f53d2d] scale-105' : 'text-gray-400'}`}
           >
             <HomeIcon className="w-5 h-5" />
             <span className="text-[9px] font-bold">Shopping</span>
           </button>
           <button 
             onClick={() => setMobileActiveTab('orders')}
-            className={`flex flex-col items-center gap-1 transition-all ${mobileActiveTab === 'orders' ? 'text-[#f53d2d] scale-105' : 'text-gray-400'}`}
+            className={`flex flex-col items-center gap-1 transition-all bg-transparent border-none cursor-pointer ${mobileActiveTab === 'orders' ? 'text-[#f53d2d] scale-105' : 'text-gray-400'}`}
           >
             <Truck className="w-5 h-5" />
             <span className="text-[9px] font-bold">Purchases</span>
           </button>
           <button 
             onClick={() => setMobileActiveTab('ai')}
-            className={`flex flex-col items-center gap-1 transition-all ${mobileActiveTab === 'ai' ? 'text-[#f53d2d] scale-105' : 'text-gray-400'}`}
+            className={`flex flex-col items-center gap-1 transition-all bg-transparent border-none cursor-pointer ${mobileActiveTab === 'ai' ? 'text-[#f53d2d] scale-105' : 'text-gray-400'}`}
           >
             <Sparkles className="w-5 h-5" />
             <span className="text-[9px] font-bold">Gemini AI</span>
           </button>
           <button 
             onClick={() => { setMobileActiveTab('seller'); setCurrentTab('seller'); }}
-            className={`flex flex-col items-center gap-1 transition-all ${mobileActiveTab === 'seller' ? 'text-[#f53d2d] scale-105' : 'text-gray-400'}`}
+            className={`flex flex-col items-center gap-1 transition-all bg-transparent border-none cursor-pointer ${mobileActiveTab === 'seller' ? 'text-[#f53d2d] scale-105' : 'text-gray-400'}`}
           >
             <Store className="w-5 h-5" />
             <span className="text-[9px] font-bold">Seller Hub</span>
           </button>
           <button 
             onClick={() => setMobileActiveTab('me')}
-            className={`flex flex-col items-center gap-1 transition-all ${mobileActiveTab === 'me' ? 'text-[#f53d2d] scale-105' : 'text-gray-400'}`}
+            className={`flex flex-col items-center gap-1 transition-all bg-transparent border-none cursor-pointer ${mobileActiveTab === 'me' ? 'text-[#f53d2d] scale-105' : 'text-gray-400'}`}
           >
             <User className="w-5 h-5" />
             <span className="text-[9px] font-bold">Account</span>
@@ -1243,7 +1246,7 @@ export default function App() {
                   <span className="text-xs text-gray-400 line-through">RM{selectedProduct.originalPrice}</span>
                 </div>
 
-                <div className="text-xs text-gray-600 bg-gray-50 p-3 rounded-lg border leading-relaxed mb-4 whitespace-pre-wrap max-h-36 overflow-y-auto">
+                <div className="text-xs text-gray-600 bg-gray-50 p-3 rounded-lg border leading-relaxed mb-4 whitespace-pre-wrap max-h-36 overflow-y-auto bg-white text-gray-700">
                   {selectedProduct.description}
                 </div>
               </div>
@@ -1254,7 +1257,7 @@ export default function App() {
               </div>
               <button
                 onClick={() => { addToCart(selectedProduct); setSelectedProduct(null); }}
-                className="w-full bg-[#f53d2d] text-white py-3 rounded-lg font-bold shadow-lg"
+                className="w-full bg-[#f53d2d] hover:bg-red-600 text-white py-3 rounded-lg font-bold shadow-lg cursor-pointer border-none"
               >
                 Add To Shopping Cart
               </button>
@@ -1281,9 +1284,9 @@ export default function App() {
                         <h5 className="font-bold text-xs text-gray-800 truncate">{item.name}</h5>
                         <p className="text-xs text-[#f53d2d] font-bold">RM {item.price}</p>
                         <div className="flex items-center gap-1.5 mt-1">
-                          <button className="px-1.5 py-0.5 border bg-white rounded font-bold text-xs" onClick={() => updateCartQuantity(item.id, -1)}>-</button>
+                          <button className="px-1.5 py-0.5 border bg-white rounded font-bold text-xs cursor-pointer" onClick={() => updateCartQuantity(item.id, -1)}>-</button>
                           <span className="text-xs font-bold text-gray-700">{item.quantity}</span>
-                          <button className="px-1.5 py-0.5 border bg-white rounded font-bold text-xs" onClick={() => updateCartQuantity(item.id, 1)}>+</button>
+                          <button className="px-1.5 py-0.5 border bg-white rounded font-bold text-xs cursor-pointer" onClick={() => updateCartQuantity(item.id, 1)}>+</button>
                         </div>
                       </div>
                       <Trash2 className="w-4 h-4 text-gray-400 cursor-pointer" onClick={() => removeFromCart(item.id)} />
@@ -1303,7 +1306,7 @@ export default function App() {
                 <button
                   onClick={handleProceedToPayment}
                   disabled={cart.length === 0}
-                  className="w-full bg-[#f53d2d] text-white py-3 rounded-lg font-bold shadow"
+                  className="w-full bg-[#f53d2d] text-white py-3 rounded-lg font-bold shadow cursor-pointer border-none"
                 >
                   Checkout and Pay
                 </button>
@@ -1332,7 +1335,7 @@ export default function App() {
                 <button
                   type="submit"
                   disabled={isProcessingPayment}
-                  className="w-full bg-emerald-600 text-white font-bold py-3 rounded-lg shadow mt-2"
+                  className="w-full bg-[#e03d2b] hover:bg-red-700 text-white font-bold py-3 rounded-lg shadow mt-2 cursor-pointer border-none"
                 >
                   {isProcessingPayment ? "Processing Secure Payment..." : `Authorize Payment (RM ${cartTotal.toFixed(2)})`}
                 </button>
@@ -1348,7 +1351,7 @@ export default function App() {
               <CheckCircle className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
               <h3 className="font-bold text-gray-900">Order Placed Successfully!</h3>
               <p className="text-[11px] text-gray-500 mt-1">Sellers have received your payment split details and are packing your items.</p>
-              <button onClick={() => setCheckoutSuccess(false)} className="mt-4 bg-[#f53d2d] text-white font-bold text-xs py-2 w-full rounded-lg">Dismiss</button>
+              <button onClick={() => setCheckoutSuccess(false)} className="mt-4 bg-[#f53d2d] text-white font-bold text-xs py-2 w-full rounded-lg cursor-pointer border-none">Dismiss</button>
             </div>
           </div>
         )}
@@ -1363,18 +1366,18 @@ export default function App() {
               </div>
               <form onSubmit={handleAuthSubmit} className="space-y-3.5 text-xs">
                 {authMode === 'register' && (
-                  <input type="text" placeholder="Your Name" value={authName} onChange={(e) => setAuthName(e.target.value)} required className="w-full p-2 border rounded animate-none" />
+                  <input type="text" placeholder="Your Name" value={authName} onChange={(e) => setAuthName(e.target.value)} required className="w-full p-2 border rounded animate-none bg-white text-gray-800" />
                 )}
-                <input type="email" placeholder="Your Email Address" value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} required className="w-full p-2 border rounded" />
-                <input type="password" placeholder="Password" value={authPassword} onChange={(e) => setAuthPassword(e.target.value)} required className="w-full p-2 border rounded" />
+                <input type="email" placeholder="Your Email Address" value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} required className="w-full p-2 border rounded bg-white text-gray-800" />
+                <input type="password" placeholder="Password" value={authPassword} onChange={(e) => setAuthPassword(e.target.value)} required className="w-full p-2 border rounded bg-white text-gray-800" />
                 
                 {authMode === 'register' && authRole === 'seller' && (
-                  <input type="text" placeholder="Create Store Name" value={authStoreName} onChange={(e) => setAuthStoreName(e.target.value)} required className="w-full p-2 border rounded" />
+                  <input type="text" placeholder="Create Store Name" value={authStoreName} onChange={(e) => setAuthStoreName(e.target.value)} required className="w-full p-2 border rounded bg-white text-gray-800" />
                 )}
 
-                <button type="submit" className="w-full bg-[#f53d2d] text-white py-2.5 rounded font-bold">Submit</button>
+                <button type="submit" className="w-full bg-[#f53d2d] text-white py-2.5 rounded font-bold cursor-pointer border-none">Submit</button>
                 <div className="text-center">
-                  <button type="button" onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')} className="text-xs text-[#f53d2d] font-bold underline">
+                  <button type="button" onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')} className="text-xs text-[#f53d2d] font-bold underline bg-transparent border-none cursor-pointer">
                     {authMode === 'login' ? "Don't have an account? Sign up" : "Already have an account? Login"}
                   </button>
                 </div>
@@ -1427,7 +1430,7 @@ export default function App() {
                     setCart([]);
                     alertToast("Logged out successfully.");
                   }} 
-                  className="text-[10px] text-red-200 underline hover:text-white"
+                  className="text-[10px] text-red-200 underline hover:text-white bg-transparent border-none cursor-pointer"
                 >
                   Log Out
                 </button>
@@ -1438,7 +1441,7 @@ export default function App() {
                   setAuthMode('login');
                   setShowAuthModal(true);
                 }} 
-                className="font-semibold hover:underline flex items-center gap-1"
+                className="font-semibold hover:underline flex items-center gap-1 bg-transparent border-none cursor-pointer"
               >
                 <User className="w-3.5 h-3.5" />
                 Login / Register
@@ -1466,21 +1469,21 @@ export default function App() {
               <input 
                 type="text" 
                 placeholder="Search products, brands, smart items..."
-                className="w-full pl-3 pr-2 py-2 text-gray-800 focus:outline-none text-sm rounded-l-md"
+                className="w-full pl-3 pr-2 py-2 text-gray-800 focus:outline-none text-sm rounded-l-md bg-white text-gray-800"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <button className="bg-[#f53d2d] text-white px-6 py-2 rounded-md hover:bg-[#d0011b] transition flex items-center gap-1">
+              <button className="bg-[#f53d2d] text-white px-6 py-2 rounded-md hover:bg-[#d0011b] transition flex items-center gap-1 cursor-pointer border-none">
                 <Search className="w-4 h-4" />
               </button>
             </div>
             {/* Quick tags */}
             <div className="hidden md:flex gap-3 text-xs mt-1.5 font-light text-red-100">
-              <span className="cursor-pointer hover:text-yellow-200" onClick={() => setSearchQuery('Keyboard')}>Keyboard</span>
-              <span className="cursor-pointer hover:text-yellow-200" onClick={() => setSearchQuery('Korean Outfit')}>Korean Outfit</span>
-              <span className="cursor-pointer hover:text-yellow-200" onClick={() => setSearchQuery('Serum')}>Serum</span>
-              <span className="cursor-pointer hover:text-yellow-200" onClick={() => setSearchQuery('Office')}>Office Chair</span>
-              <span className="cursor-pointer hover:text-yellow-200" onClick={() => setSearchQuery('Air Fryer')}>Air Fryer</span>
+              <span className="cursor-pointer hover:text-yellow-200 animate-none" onClick={() => setSearchQuery('Keyboard')}>Keyboard</span>
+              <span className="cursor-pointer hover:text-yellow-200 animate-none" onClick={() => setSearchQuery('Korean Outfit')}>Korean Outfit</span>
+              <span className="cursor-pointer hover:text-yellow-200 animate-none" onClick={() => setSearchQuery('Serum')}>Serum</span>
+              <span className="cursor-pointer hover:text-yellow-200 animate-none" onClick={() => setSearchQuery('Office')}>Office Chair</span>
+              <span className="cursor-pointer hover:text-yellow-200 animate-none" onClick={() => setSearchQuery('Air Fryer')}>Air Fryer</span>
             </div>
           </div>
 
@@ -1489,14 +1492,14 @@ export default function App() {
             <div className="flex bg-orange-800/40 p-1 rounded-full border border-orange-400/30">
               <button 
                 onClick={() => setCurrentTab('buyer')}
-                className={`px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 transition ${currentTab === 'buyer' ? 'bg-white text-[#f53d2d] shadow' : 'text-white hover:bg-orange-800/30'}`}
+                className={`px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer border-none ${currentTab === 'buyer' ? 'bg-white text-[#f53d2d] shadow' : 'text-white hover:bg-orange-800/30 bg-transparent'}`}
               >
                 <ShoppingBag className="w-3.5 h-3.5" />
                 Buyer Mall
               </button>
               <button 
                 onClick={() => setCurrentTab('seller')}
-                className={`px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 transition ${currentTab === 'seller' ? 'bg-white text-[#f53d2d] shadow' : 'text-white hover:bg-orange-800/30'}`}
+                className={`px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer border-none ${currentTab === 'seller' ? 'bg-white text-[#f53d2d] shadow' : 'text-[#ffffff] hover:bg-[#9a3412]/30 bg-transparent'}`}
               >
                 <Store className="w-3.5 h-3.5" />
                 Seller Centre
@@ -1508,14 +1511,14 @@ export default function App() {
               {currentUser && currentUser.role !== 'seller' && (
                 <button 
                   onClick={() => setShowOrdersModal(true)}
-                  className="hidden md:flex items-center gap-1.5 text-white hover:text-yellow-200 transition text-xs font-semibold"
+                  className="hidden md:flex items-center gap-1.5 text-white hover:text-yellow-200 transition text-xs font-semibold bg-transparent border-none cursor-pointer"
                 >
                   <Truck className="w-5 h-5" />
                   My Purchases
                 </button>
               )}
               <div 
-                className="relative cursor-pointer hover:scale-105 transition"
+                className="relative cursor-pointer hover:scale-105 transition animate-none"
                 onClick={() => setShowCart(true)}
               >
                 <CartIcon className="w-7 h-7 text-white" />
@@ -1545,8 +1548,8 @@ export default function App() {
                   <p className="text-orange-100 text-sm mt-1">Claim discount vouchers up to 90% off coins cashback daily.</p>
                 </div>
                 <div className="flex gap-2">
-                  <button className="bg-white text-red-600 font-bold px-4 py-1.5 rounded text-xs shadow hover:bg-orange-50 transition">Shop Campaign</button>
-                  <button className="bg-transparent border border-white hover:bg-white/10 text-white font-bold px-4 py-1.5 rounded text-xs transition">Claim Vouchers</button>
+                  <button className="bg-white text-red-600 font-bold px-4 py-1.5 rounded text-xs shadow hover:bg-orange-50 transition border-none cursor-pointer">Shop Campaign</button>
+                  <button className="bg-transparent border border-white hover:bg-white/10 text-white font-bold px-4 py-1.5 rounded text-xs transition cursor-pointer">Claim Vouchers</button>
                 </div>
                 <div className="absolute -bottom-10 -right-10 w-44 h-44 bg-yellow-300/20 rounded-full blur-xl"></div>
               </div>
@@ -1590,7 +1593,7 @@ export default function App() {
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-4 py-2 rounded-full text-xs font-semibold border whitespace-nowrap transition ${selectedCategory === cat ? 'bg-[#f53d2d] border-[#f53d2d] text-white shadow' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                  className={`px-4 py-2 rounded-full text-xs font-semibold border whitespace-nowrap transition cursor-pointer ${selectedCategory === cat ? 'bg-[#f53d2d] border-[#f53d2d] text-white shadow' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
                 >
                   {cat}
                 </button>
@@ -1638,7 +1641,7 @@ export default function App() {
                 <Store className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-xl font-bold">Register as a Merchant Seller</h3>
                 <p className="text-xs text-gray-400 mt-1.5 mb-5 max-w-md mx-auto">Build your online e-commerce platform and trade live items safely across Malaysia.</p>
-                <button onClick={() => { setAuthRole('seller'); setAuthMode('register'); setShowAuthModal(true); }} className="mt-4 bg-[#f53d2d] text-white font-bold py-2.5 px-6 rounded-lg shadow-md">Become Seller</button>
+                <button onClick={() => { setAuthRole('seller'); setAuthMode('register'); setShowAuthModal(true); }} className="mt-4 bg-[#f53d2d] text-white font-bold py-2.5 px-6 rounded-lg shadow-md cursor-pointer border-none">Become Seller</button>
               </div>
             ) : !currentUser.isVerified ? (
               <div className="bg-white rounded-xl border p-8 text-center max-w-xl mx-auto shadow-sm my-12 space-y-4">
@@ -1664,7 +1667,7 @@ export default function App() {
                 </div>
 
                 <div className="flex gap-2 justify-center">
-                  <button onClick={instantApproveSeller} className="bg-emerald-600 text-white font-bold py-2.5 px-6 rounded-lg text-xs shadow-md">⚡ Instant Admin Approval</button>
+                  <button onClick={instantApproveSeller} className="bg-emerald-600 text-white font-bold py-2.5 px-6 rounded-lg text-xs shadow-md cursor-pointer border-none">⚡ Instant Admin Approval</button>
                 </div>
               </div>
             ) : (
@@ -1691,24 +1694,24 @@ export default function App() {
                       Publish New Product
                     </h3>
                     <form onSubmit={handleAddNewProduct} className="space-y-4 text-xs">
-                      <input type="text" placeholder="Product Title" value={newProdName} onChange={(e) => setNewProdName(e.target.value)} required className="w-full p-2.5 border rounded" />
+                      <input type="text" placeholder="Product Title" value={newProdName} onChange={(e) => setNewProdName(e.target.value)} required className="w-full p-2.5 border rounded bg-white text-gray-800 focus:outline-none" />
                       <div className="grid grid-cols-2 gap-3">
-                        <input type="number" placeholder="Price (RM)" value={newProdPrice} onChange={(e) => setNewProdPrice(e.target.value)} required className="w-full p-2.5 border rounded" />
-                        <input type="number" placeholder="Stock" value={newProdStock} onChange={(e) => setNewProdStock(e.target.value)} required className="w-full p-2.5 border rounded" />
+                        <input type="number" placeholder="Price (RM)" value={newProdPrice} onChange={(e) => setNewProdPrice(e.target.value)} required className="w-full p-2.5 border rounded bg-white text-gray-800 focus:outline-none" />
+                        <input type="number" placeholder="Stock" value={newProdStock} onChange={(e) => setNewProdStock(e.target.value)} required className="w-full p-2.5 border rounded bg-white text-gray-800 focus:outline-none" />
                       </div>
                       <div className="bg-orange-50 p-3 rounded border border-orange-100 space-y-2">
                         <span className="text-xs font-bold text-orange-800 flex items-center gap-1.5"><Sparkles className="w-4 h-4 text-[#f53d2d] fill-current" /> Gemini Assistant AI</span>
-                        <textarea placeholder="e.g. noise-canceling, red design, immersive" rows="2" className="w-full p-2 bg-white text-xs border border-orange-200 rounded" value={aiPrompt} onChange={(e) => setAiPrompt(e.target.value)} />
-                        <button type="button" onClick={generateAIDescription} className="w-full bg-[#f53d2d] text-white font-bold text-xs py-1.5 rounded">{isGeneratingDesc ? 'Generating...' : 'Generate Description Copy'}</button>
+                        <textarea placeholder="e.g. noise-canceling, red design, immersive" rows="2" className="w-full p-2 bg-white text-xs border border-orange-200 rounded text-gray-800 focus:outline-none" value={aiPrompt} onChange={(e) => setAiPrompt(e.target.value)} />
+                        <button type="button" onClick={generateAIDescription} className="w-full bg-[#f53d2d] hover:bg-orange-600 text-white font-bold text-xs py-1.5 rounded cursor-pointer border-none">{isGeneratingDesc ? 'Generating...' : 'Generate Description Copy'}</button>
                       </div>
 
                       <div className="bg-amber-50 p-3 rounded border border-amber-100">
                         <span className="text-xs font-bold text-amber-800 flex items-center gap-1.5"><ImageIcon className="w-4 h-4 text-amber-600" /> Cover Designer</span>
-                        <input type="text" placeholder="e.g. gaming headset white studio photorealistic" className="w-full mt-2 px-2 py-1.5 border border-amber-200 rounded bg-white" value={imagePrompt} onChange={(e) => setImagePrompt(e.target.value)} />
-                        <button type="button" onClick={generateAIImage} className="w-full mt-2 bg-amber-600 text-white font-bold py-1.5 rounded">{isGeneratingImage ? 'Designing...' : 'Generate Product Graphic'}</button>
+                        <input type="text" placeholder="e.g. gaming headset white studio photorealistic" className="w-full mt-2 px-2 py-1.5 border border-amber-200 rounded bg-white text-gray-800 focus:outline-none" value={imagePrompt} onChange={(e) => setImagePrompt(e.target.value)} />
+                        <button type="button" onClick={generateAIImage} className="w-full mt-2 bg-amber-600 text-white font-bold py-1.5 rounded cursor-pointer border-none">{isGeneratingImage ? 'Designing...' : 'Generate Product Graphic'}</button>
                       </div>
 
-                      <button type="submit" className="w-full bg-emerald-600 text-white py-3 rounded font-bold shadow">Publish Listing</button>
+                      <button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded font-bold shadow cursor-pointer border-none">Publish Listing</button>
                     </form>
                   </div>
 
@@ -1730,7 +1733,7 @@ export default function App() {
                           <button onClick={() => {
                             setProducts(prev => prev.map(item => item.id === p.id ? { ...item, stock: item.stock + 10 } : item));
                             alertToast("Restocked +10 units successfully!");
-                          }} className="text-xs text-orange-600 font-bold border border-orange-200 px-3 py-1 rounded bg-white hover:bg-orange-50">Restock (+10)</button>
+                          }} className="text-xs text-orange-600 font-bold border border-orange-200 px-3 py-1.5 rounded bg-white hover:bg-orange-50 cursor-pointer">Restock (+10)</button>
                         </div>
                       ))}
                     </div>
@@ -1759,9 +1762,9 @@ export default function App() {
                     <h4 className="font-bold text-xs text-gray-800 truncate">{item.name}</h4>
                     <span className="text-xs font-bold text-[#f53d2d]">RM {item.price}</span>
                     <div className="flex items-center gap-1.5 mt-2">
-                      <button className="px-2 py-0.5 border bg-white rounded font-bold" onClick={() => updateCartQuantity(item.id, -1)}>-</button>
+                      <button className="px-2 py-0.5 border bg-white rounded font-bold cursor-pointer" onClick={() => updateCartQuantity(item.id, -1)}>-</button>
                       <span className="text-xs font-bold">{item.quantity}</span>
-                      <button className="px-2 py-0.5 border bg-white rounded font-bold" onClick={() => updateCartQuantity(item.id, 1)}>+</button>
+                      <button className="px-2 py-0.5 border bg-white rounded font-bold cursor-pointer" onClick={() => updateCartQuantity(item.id, 1)}>+</button>
                     </div>
                   </div>
                   <Trash2 className="w-4 h-4 text-gray-400 cursor-pointer self-center" onClick={() => removeFromCart(item.id)} />
@@ -1773,7 +1776,7 @@ export default function App() {
                 <span className="font-bold text-gray-700">Subtotal Amount:</span>
                 <span className="text-xl font-extrabold text-[#f53d2d]">RM {cartTotal.toFixed(2)}</span>
               </div>
-              <button onClick={handleProceedToPayment} className="w-full bg-[#f53d2d] text-white py-3 rounded-lg font-bold shadow">Proceed to Payment</button>
+              <button onClick={handleProceedToPayment} className="w-full bg-[#f53d2d] hover:bg-red-600 text-white py-3 rounded-lg font-bold shadow cursor-pointer border-none">Proceed to Payment</button>
             </div>
           </div>
         </div>
@@ -1798,7 +1801,7 @@ export default function App() {
               {/* Desktop Render Payment Selector */}
               {renderPaymentMethodSelector()}
 
-              <button type="submit" disabled={isProcessingPayment} className="w-full bg-emerald-600 text-white font-bold py-3 rounded-lg shadow-md transition flex justify-center items-center gap-2 mt-2">
+              <button type="submit" disabled={isProcessingPayment} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-md transition flex justify-center items-center gap-2 mt-2 cursor-pointer border-none">
                 {isProcessingPayment ? "Processing..." : `Pay RM {cartTotal.toFixed(2)}`}
               </button>
             </form>
@@ -1850,14 +1853,14 @@ export default function App() {
               <div className="flex items-center gap-2.5">
                 <Lock className="w-5 h-5 text-yellow-300" />
                 <h3 className="font-extrabold text-[17px] tracking-wide">
-                  {authMode === 'login' ? 'Sign In to Shopee' : 'Create Merchant Account'}
+                  {authMode === 'login' ? 'Sign In to Shopee' : 'Create Account'}
                 </h3>
               </div>
               <p className="text-[11px] text-red-100 mt-1 leading-normal">Secure buyer & seller portal access</p>
               
               <button 
                 onClick={() => setShowAuthModal(false)}
-                className="absolute top-4 right-4 text-white/80 hover:text-white transition p-1 hover:bg-white/10 rounded-full"
+                className="absolute top-4 right-4 text-white/80 hover:text-white transition p-1 hover:bg-white/10 rounded-full bg-transparent border-none cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1872,14 +1875,14 @@ export default function App() {
                   <button
                     type="button"
                     onClick={() => setAuthRole('buyer')}
-                    className={`flex-1 py-1.5 rounded-md text-xs font-bold text-center transition ${authRole === 'buyer' ? 'bg-[#f53d2d] text-white shadow' : 'bg-white text-gray-500'}`}
+                    className={`flex-1 py-1.5 rounded-md text-xs font-bold text-center transition cursor-pointer border-none ${authRole === 'buyer' ? 'bg-[#f53d2d] text-white shadow' : 'bg-white text-gray-500'}`}
                   >
                     Customer Profile
                   </button>
                   <button
                     type="button"
                     onClick={() => setAuthRole('seller')}
-                    className={`flex-1 py-1.5 rounded-md text-xs font-bold text-center transition ${authRole === 'seller' ? 'bg-gray-800 text-white shadow' : 'bg-white text-gray-500'}`}
+                    className={`flex-1 py-1.5 rounded-md text-xs font-bold text-center transition cursor-pointer border-none ${authRole === 'seller' ? 'bg-gray-800 text-white shadow' : 'bg-white text-gray-500'}`}
                   >
                     Merchant Store
                   </button>
@@ -1895,7 +1898,7 @@ export default function App() {
                     placeholder="e.g. Shiyuan Tan" 
                     value={authName} 
                     onChange={(e) => setAuthName(e.target.value)} 
-                    className="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-red-500 text-gray-800 bg-white" 
+                    className="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-red-500 text-gray-800 bg-white shadow-sm" 
                   />
                 </div>
               )}
@@ -1908,7 +1911,7 @@ export default function App() {
                   placeholder="e.g. merchant@shopee.com" 
                   value={authEmail} 
                   onChange={(e) => setAuthEmail(e.target.value)} 
-                  className="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-red-500 text-gray-800 bg-white" 
+                  className="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-red-500 text-gray-800 bg-white shadow-sm" 
                 />
               </div>
 
@@ -1920,7 +1923,7 @@ export default function App() {
                   placeholder="••••••••" 
                   value={authPassword} 
                   onChange={(e) => setAuthPassword(e.target.value)} 
-                  className="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-red-500 text-gray-800 bg-white" 
+                  className="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-red-500 text-gray-800 bg-white shadow-sm" 
                 />
               </div>
 
@@ -1933,7 +1936,7 @@ export default function App() {
                     placeholder="e.g. Supreme Electro Store" 
                     value={authStoreName} 
                     onChange={(e) => setAuthStoreName(e.target.value)} 
-                    className="w-full px-3 py-1.5 border border-orange-200 rounded-lg text-xs focus:outline-none focus:border-red-500 text-gray-800 bg-white" 
+                    className="w-full px-3 py-1.5 border border-orange-200 rounded-lg text-xs focus:outline-none focus:border-red-500 text-gray-800 bg-white shadow-sm" 
                   />
                 </div>
               )}
@@ -1947,7 +1950,7 @@ export default function App() {
                       required 
                       id="pdpaConsentCheck"
                       checked={pdpaAgreed} 
-                      onChange={(e) => setPdpaAgreed(e.target.checked)} 
+                      onChange={(e) => setPdpaAgreed(e.checked)} 
                       className="mt-0.5 accent-[#f53d2d]" 
                     />
                     <label htmlFor="pdpaConsentCheck" className="cursor-pointer select-none">
@@ -1959,7 +1962,7 @@ export default function App() {
 
               <button 
                 type="submit" 
-                className="w-full bg-[#f53d2d] hover:bg-red-600 text-white py-3 rounded-lg font-bold text-xs tracking-wider transition shadow-md"
+                className="w-full bg-[#f53d2d] hover:bg-red-600 text-white py-3 rounded-lg font-bold text-xs tracking-wider transition shadow-md cursor-pointer border-none"
               >
                 {authMode === 'login' ? 'Sign In' : 'Agree & Create Account'}
               </button>
@@ -1968,12 +1971,12 @@ export default function App() {
                 {authMode === 'login' ? (
                   <span>
                     Don't have an account yet?{' '}
-                    <button type="button" onClick={() => setAuthMode('register')} className="text-[#f53d2d] font-bold underline">Register Now</button>
+                    <button type="button" onClick={() => setAuthMode('register')} className="text-[#f53d2d] font-bold underline bg-transparent border-none p-0 cursor-pointer">Register Now</button>
                   </span>
                 ) : (
                   <span>
                     Already registered?{' '}
-                    <button type="button" onClick={() => setAuthMode('login')} className="text-[#f53d2d] font-bold underline">Sign In</button>
+                    <button type="button" onClick={() => setAuthMode('login')} className="text-[#f53d2d] font-bold underline bg-transparent border-none p-0 cursor-pointer">Sign In</button>
                   </span>
                 )}
               </div>
@@ -2063,7 +2066,7 @@ export default function App() {
               {/* Description */}
               <div className="space-y-1.5">
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Product Specifications</span>
-                <div className="bg-gray-50 p-3 rounded-lg border text-xs text-gray-600 font-sans leading-relaxed whitespace-pre-wrap max-h-36 overflow-y-auto">
+                <div className="bg-gray-50 p-3 rounded-lg border text-xs text-gray-600 font-sans leading-relaxed whitespace-pre-wrap max-h-36 overflow-y-auto bg-white text-gray-700">
                   {selectedProduct.description}
                 </div>
               </div>
@@ -2075,7 +2078,7 @@ export default function App() {
                   setSelectedProduct(null);
                 }}
                 disabled={selectedProduct.stock <= 0}
-                className={`w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider text-white shadow-md flex items-center justify-center gap-2 transition ${selectedProduct.stock > 0 ? 'bg-[#f53d2d] hover:bg-red-600' : 'bg-gray-400 cursor-not-allowed'}`}
+                className="w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider text-white shadow-md flex items-center justify-center gap-2 transition bg-[#f53d2d] hover:bg-red-600 cursor-pointer border-none"
               >
                 <CartIcon className="w-4 h-4" />
                 Add to Shopping Cart
@@ -2085,6 +2088,44 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* Standard Desktop Web Footer */}
+      <footer className="hidden md:block bg-white border-t border-gray-200 mt-12 py-8 text-xs text-gray-500">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div>
+            <h5 className="font-bold text-gray-700 mb-3 uppercase">Customer Service</h5>
+            <ul className="space-y-1.5">
+              <li className="hover:underline cursor-pointer">Help Centre</li>
+              <li className="hover:underline cursor-pointer">Shopee Coins</li>
+              <li className="hover:underline cursor-pointer">How To Buy</li>
+              <li className="hover:underline cursor-pointer">How To Sell</li>
+              <li className="hover:underline cursor-pointer">Contact Us</li>
+            </ul>
+          </div>
+          <div>
+            <h5 className="font-bold text-gray-700 mb-3 uppercase">About Shopee</h5>
+            <ul className="space-y-1.5">
+              <li className="hover:underline cursor-pointer">About Us</li>
+              <li className="hover:underline cursor-pointer">Careers</li>
+              <li className="hover:underline cursor-pointer">Privacy Policy</li>
+              <li className="hover:underline cursor-pointer">Shopee Mall</li>
+              <li className="hover:underline cursor-pointer">Seller Centre</li>
+            </ul>
+          </div>
+          <div>
+            <h5 className="font-bold text-gray-700 mb-3 uppercase">Payment Methods</h5>
+            <div className="grid grid-cols-3 gap-2">
+              <span className="border p-2 text-center rounded font-bold text-gray-600 hover:border-orange-500 cursor-pointer">VISA</span>
+              <span className="border p-2 text-center rounded font-bold text-gray-600 hover:border-orange-500 cursor-pointer">SPayLater</span>
+              <span className="border p-2 text-center rounded font-bold text-gray-600 hover:border-orange-500 cursor-pointer">FPX</span>
+            </div>
+          </div>
+          <div>
+            <h5 className="font-bold text-gray-700 mb-3 uppercase">Download Shopee App</h5>
+            <p className="mb-2 leading-relaxed">Scan QR code to install Shopee clone app instantly to claim your RM15 welcome voucher!</p>
+          </div>
+        </div>
+      </footer>
 
     </div>
   );
