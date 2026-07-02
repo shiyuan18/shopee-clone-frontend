@@ -35,7 +35,10 @@ import {
   Home as HomeIcon,
   QrCode,
   Smartphone,
-  ChevronDown
+  ChevronDown,
+  MessageSquare,
+  Share2,
+  Info
 } from 'lucide-react';
 
 // Use ShoppingBag as the CartIcon internally to avoid duplicate import keys
@@ -329,7 +332,7 @@ export default function App() {
         total: totalOrderValue,
         status: 'Processing', // 'Processing', 'Shipped', 'Delivered'
         date: new Date().toLocaleDateString(),
-        estimatedArrival: new Date(Date.now() + (3 * 24 * 60 * 60 * 1000)).toLocaleString() // +3 days
+        estimatedArrival: new Date(Date.now() + (3 * 24 * 60 * 60 * 1000)).toLocaleDateString() // +3 days
       };
       setMyOrders(prev => [newOrder, ...prev]);
 
@@ -642,7 +645,7 @@ export default function App() {
                   required 
                   placeholder="Cardholder Full Name" 
                   defaultValue={currentUser?.name}
-                  className="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-sm" 
+                  className="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-sm text-gray-800" 
                 />
               </div>
               <div>
@@ -651,7 +654,7 @@ export default function App() {
                   required 
                   placeholder="Card Number (16 Digits)" 
                   maxLength="16" 
-                  className="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-mono shadow-sm" 
+                  className="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-mono shadow-sm text-gray-800" 
                 />
               </div>
               <div className="grid grid-cols-2 gap-2.5">
@@ -660,14 +663,14 @@ export default function App() {
                   required 
                   placeholder="Expiry (MM/YY)" 
                   maxLength="5" 
-                  className="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-sm" 
+                  className="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-sm text-gray-800" 
                 />
                 <input 
                   type="password" 
                   required 
                   placeholder="CVV" 
                   maxLength="3" 
-                  className="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-mono shadow-sm" 
+                  className="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-mono shadow-sm text-gray-800" 
                 />
               </div>
             </div>
@@ -773,7 +776,7 @@ export default function App() {
                       setSellerStats(prev => ({ ...prev, pendingSettlement: 0 }));
                     }
                   }}
-                  className="mt-2.5 w-full bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold py-1.5 rounded-lg shadow-sm transition-all duration-200 relative z-10"
+                  className="mt-2.5 w-full bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold py-1.5 rounded-lg shadow-sm transition-all duration-200 relative z-10 cursor-pointer border-none"
                 >
                   Withdraw RM {sellerStats.pendingSettlement.toFixed(2)}
                 </button>
@@ -785,603 +788,827 @@ export default function App() {
     );
   };
 
-  // =========================================================
-  // RENDER SELECTION: MOBILE NATIVE APP VIEW VS DESKTOP WEB
-  // =========================================================
+  // Helper component to render a premium multi-vendor Shopee App onboarding banner
+  const renderAppIntroductionBanner = () => {
+    return (
+      <div className="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200/50 rounded-2xl p-4 md:p-5 mb-5 md:mb-6 shadow-sm relative overflow-hidden">
+        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="space-y-1 md:max-w-2xl">
+            <div className="flex items-center gap-1.5">
+              <span className="bg-[#f53d2d] text-white text-[9px] font-black uppercase px-2 py-0.5 rounded-full flex items-center gap-1">
+                <Sparkles className="w-3 h-3 fill-current" />
+                Next-Gen Prototype
+              </span>
+              <span className="text-[10px] text-orange-600 font-bold uppercase tracking-widest">Shopee Malaysia v4.0</span>
+            </div>
+            <h3 className="text-gray-900 font-extrabold text-sm md:text-base tracking-tight leading-tight">
+              Integrated Multi-Vendor E-Commerce Platform
+            </h3>
+            <p className="text-gray-500 text-xs leading-relaxed font-normal">
+              A high-fidelity sandbox environment designed to test fast local commerce. Review dynamic storefronts, simulate <strong>Stripe card processing</strong> & <strong>Touch 'n Go</strong> wallets, track <strong>Shopee Express</strong> deliveries, or use the <strong>Google Gemini AI Assistant</strong> to write high-converting copy!
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2 shrink-0">
+            <button 
+              onClick={() => {
+                setAuthRole('seller');
+                setAuthMode('register');
+                setShowAuthModal(true);
+              }}
+              className="bg-gray-900 hover:bg-gray-800 text-white font-bold text-[11px] px-3.5 py-2 rounded-xl shadow-sm transition-all"
+            >
+              Onboard Seller Store
+            </button>
+            <button 
+              onClick={() => {
+                setAuthEmail('seller-verify@gmail.com');
+                setAuthPassword('mypassword123');
+                // Simulate login automatically
+                const simulatedUser = {
+                  name: "Shiyuan Admin",
+                  email: "seller-verify@gmail.com",
+                  role: 'seller',
+                  storeName: "Supreme Electro Store",
+                  isVerified: true,
+                  verificationPending: false
+                };
+                setCurrentUser(simulatedUser);
+                alertToast("👋 Welcome back to Supreme Electro Store!");
+              }}
+              className="bg-[#f53d2d] hover:bg-red-600 text-white font-bold text-[11px] px-3.5 py-2 rounded-xl shadow-sm transition-all"
+            >
+              Demo Verified Seller
+            </button>
+          </div>
+        </div>
+        {/* Abstract design elements */}
+        <div className="absolute top-1/2 -right-8 w-24 h-24 bg-orange-200/20 rounded-full blur-xl -translate-y-1/2"></div>
+      </div>
+    );
+  };
+
+  // Helper component to render the beautiful responsive mobile footer links and payment details
+  const renderResponsiveFooterInfo = () => {
+    return (
+      <div className="bg-white border-t border-gray-200 py-6 px-4 space-y-5 text-gray-500">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <h5 className="font-bold text-gray-700 text-xs uppercase tracking-wide">Customer Care</h5>
+            <p className="text-[10px] leading-relaxed">Help Center, Shipping Rules, Return Guidelines, Coin Rewards Program.</p>
+          </div>
+          <div className="space-y-1.5">
+            <h5 className="font-bold text-gray-700 text-xs uppercase tracking-wide">Security Gateways</h5>
+            <p className="text-[10px] leading-relaxed">Fully compliant under local PDPA 2010 regulations. Safe checkout with 256-bit SSL encryption.</p>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <h5 className="font-bold text-gray-700 text-xs uppercase tracking-wide">Supported Payment Networks</h5>
+          <div className="flex flex-wrap gap-1.5">
+            {['Visa', 'Mastercard', 'FPX Direct', 'Maybank2u', 'Touch \'n Go', 'ShopeePay', 'COD Available'].map((pay) => (
+              <span key={pay} className="bg-gray-50 border border-gray-150 rounded-lg px-2.5 py-1 text-[9px] font-bold text-gray-600 shadow-sm">
+                {pay}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="border-t border-gray-100 pt-4 text-center">
+          <p className="text-[9px] text-gray-400">© 2026 Shopee Clone Multi-Vendor Marketplace. Powered by React, Tailwind v4, and Gemini AI. All rights reserved.</p>
+        </div>
+      </div>
+    );
+  };
+
   if (isMobile) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col font-sans text-gray-800 antialiased pb-20">
         
-        {/* Mobile Header: Clean Floating search, no nested topbars */}
-        <header className="sticky top-0 z-40 bg-[#f53d2d] text-white shadow-md px-4 py-3 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2" onClick={() => setMobileActiveTab('home')}>
-            <div className="bg-white text-[#f53d2d] px-2 py-0.5 rounded font-black text-lg tracking-tighter">S</div>
-            <span className="font-extrabold text-sm uppercase tracking-wider">Shopee</span>
-          </div>
-
-          <div className="flex-1 max-w-xs relative">
-            <div className="flex bg-white/15 backdrop-blur rounded-lg p-1.5 items-center">
-              <Search className="w-3.5 h-3.5 text-orange-200 ml-1.5 mr-2" />
-              <input 
-                type="text" 
-                placeholder="Search products..."
-                className="w-full bg-transparent text-white placeholder-orange-200 text-xs focus:outline-none"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              {searchQuery && (
-                <X className="w-3.5 h-3.5 text-white/70 cursor-pointer mr-1" onClick={() => setSearchQuery('')} />
-              )}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 relative">
-            <div className="relative p-1" onClick={() => setShowCart(true)}>
-              <CartIcon className="w-5.5 h-5.5 text-white" />
-              {cart.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-yellow-400 text-[#d0011b] font-black text-[9px] rounded-full w-4 h-4 flex items-center justify-center border border-[#f53d2d]">
-                  {cart.length}
-                </span>
-              )}
-            </div>
-          </div>
-        </header>
-
-        {/* Dynamic Mobile Tab Screen Render */}
-        <div className="flex-1 px-3 py-3">
-          
-          {/* TAB 1: HOME SHOPPING MALL */}
-          {mobileActiveTab === 'home' && (
-            <div>
-              {/* Campaign Banners */}
-              <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-lg p-4 text-white relative overflow-hidden min-h-[110px] flex flex-col justify-between mb-4 shadow relative">
-                <div>
-                  <span className="bg-yellow-400 text-red-950 text-[9px] font-black uppercase px-2 py-0.5 rounded">Mega Campaign</span>
-                  <h3 className="text-base font-extrabold mt-1">FREE SHIPPING RM0 SPEND!</h3>
-                </div>
-                <div className="flex gap-1.5 z-10">
-                  <button className="bg-white text-red-600 font-bold px-2.5 py-1 rounded text-[9px] shadow">Shop Now</button>
-                  <button className="bg-white/20 border border-white/30 text-white font-bold px-2.5 py-1 rounded text-[9px]">Vouchers</button>
-                </div>
-                <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-yellow-300/20 rounded-full blur-lg"></div>
-              </div>
-
-              {/* Flash Sales with timers */}
-              <div className="bg-white rounded-lg p-3 mb-4 shadow-sm border border-orange-100 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-[#f53d2d] font-black italic text-sm tracking-wider">⚡ FLASH SALE</span>
-                  <div className="flex items-center gap-0.5 font-mono">
-                    <span className="bg-gray-900 text-white text-[9px] px-1 py-0.5 rounded font-bold">{String(countdown.hrs).padStart(2, '0')}</span>
-                    <span className="text-gray-900 text-[9px] font-bold">:</span>
-                    <span className="bg-gray-900 text-white text-[9px] px-1 py-0.5 rounded font-bold">{String(countdown.mins).padStart(2, '0')}</span>
-                    <span className="text-gray-900 text-[9px] font-bold">:</span>
-                    <span className="bg-gray-900 text-white text-[9px] px-1.5 py-0.5 rounded">{String(countdown.secs).padStart(2, '0')}</span>
-                  </div>
-                </div>
-                <span className="text-[10px] text-orange-600 font-semibold flex items-center">All deals <ChevronRight className="w-3.5 h-3.5" /></span>
-              </div>
-
-              {/* Categories Pills */}
-              <div className="flex gap-1.5 overflow-x-auto pb-3 scrollbar-none">
-                {['All', 'Electronics', 'Fashion', 'Beauty', 'Home & Living'].map(cat => (
-                  <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`px-3 py-1 rounded-full text-xs font-semibold border whitespace-nowrap transition-all ${selectedCategory === cat ? 'bg-[#f53d2d] border-[#f53d2d] text-white shadow-sm' : 'bg-white text-gray-500 border-gray-200'}`}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-
-              {/* Grid Products */}
-              <div className="grid grid-cols-2 gap-2">
-                {filteredProducts.map(product => {
-                  const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
-                  return (
-                    <div 
-                      key={product.id} 
-                      className="bg-white rounded border border-gray-100 p-2 flex flex-col justify-between relative"
-                      onClick={() => setSelectedProduct(product)}
-                    >
-                      {discount > 0 && (
-                        <div className="absolute top-0 right-0 bg-[#ffd13f] text-[#f53d2d] text-[8px] font-black px-1 py-0.5 rounded-bl">
-                          {discount}% OFF
-                        </div>
-                      )}
-                      <div className="aspect-square bg-gray-50 rounded overflow-hidden mb-1.5">
-                        <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-                      </div>
-                      <h4 className="text-[11px] text-gray-800 line-clamp-2 leading-tight font-medium mb-1">{product.name}</h4>
-                      <div>
-                        <div className="flex items-baseline gap-1">
-                          <span className="text-[9px] text-[#f53d2d] font-bold">RM</span>
-                          <span className="text-sm font-bold text-[#f53d2d]">{product.price}</span>
-                        </div>
-                        <div className="flex items-center justify-between text-[8px] text-gray-400 mt-1 border-t border-gray-50 pt-1">
-                          <span>⭐ {product.rating}</span>
-                          <span>{product.sales} sold</span>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* TAB 2: LOGISTICS TRACKER */}
-          {mobileActiveTab === 'orders' && (
-            <div className="max-w-md mx-auto">
-              <h3 className="font-extrabold text-base text-gray-800 flex items-center gap-2 mb-3">
-                <Truck className="w-5 h-5 text-[#f53d2d]" />
-                My Purchases ({myOrders.length})
-              </h3>
-              
-              {myOrders.length === 0 ? (
-                <div className="bg-white rounded-lg p-8 text-center border">
-                  <Package className="w-12 h-12 text-gray-300 mx-auto mb-2" />
-                  <h4 className="font-bold text-gray-700 text-sm">No Orders Found</h4>
-                  <p className="text-xs text-gray-400">Checkout products in your cart to see live tracking maps.</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {myOrders.map(order => (
-                    <div key={order.id} className="bg-white border rounded-lg p-3 shadow-sm">
-                      <div className="flex justify-between items-center pb-2 border-b border-gray-100 text-[11px]">
-                        <span className="font-bold text-gray-700">{order.id}</span>
-                        <span className="bg-orange-100 text-orange-800 px-2 py-0.5 rounded font-black uppercase text-[8px]">{order.status}</span>
-                      </div>
-                      <div className="py-2.5 space-y-2">
-                        {order.items.map((item, idx) => (
-                          <div key={idx} className="flex gap-2 text-xs">
-                            <img src={item.image} className="w-10 h-10 object-cover rounded border" alt="" />
-                            <div className="flex-1 min-w-0">
-                              <h5 className="font-bold text-gray-800 truncate">{item.name}</h5>
-                              <p className="text-[10px] text-gray-400">Qty: {item.quantity}</p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="bg-gray-50 p-2 rounded text-[10px] text-gray-500 border border-gray-100">
-                        <div className="flex justify-between items-center font-bold text-gray-700 mb-1">
-                          <span>Shopee Express Logistics</span>
-                          <span className="text-emerald-600">Expected: {order.estimatedArrival}</span>
-                        </div>
-                        <p>Status: Merchant packed parcel, awaiting courier pickup at central sorting hub.</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* TAB 3: GEMINI AI HELPER */}
-          {mobileActiveTab === 'ai' && (
-            <div className="max-w-md mx-auto bg-white rounded-lg border p-4 shadow-sm space-y-4">
-              <div className="flex items-center gap-1.5 text-sm font-bold text-orange-800">
-                <Sparkles className="w-5 h-5 text-[#f53d2d] fill-current animate-pulse" />
-                <span>Gemini Copywriting Companion</span>
-              </div>
-              <p className="text-xs text-gray-500">Provide bullet points or specifications below to let Gemini instantly draft high-converting Shopee descriptions!</p>
-              
-              <textarea 
-                placeholder="e.g. noise-canceling, RGB lights, soft leather cushions, 1 year warranty"
-                value={aiPrompt}
-                onChange={(e) => setAiPrompt(e.target.value)}
-                className="w-full p-2.5 border rounded-lg text-xs focus:outline-none focus:border-orange-500 font-medium bg-white text-gray-800"
-                rows="3"
-              ></textarea>
-
-              <button
-                onClick={generateAIDescription}
-                disabled={isGeneratingDesc}
-                className="w-full bg-[#f53d2d] hover:bg-orange-600 text-white font-bold text-xs py-2.5 rounded-lg shadow-md transition flex items-center justify-center gap-1.5"
+        {/* Render Full-Screen Product Details on Mobile - Native Style (Solves image_94c7e8.png popup issue!) */}
+        {selectedProduct ? (
+          <div className="min-h-screen bg-white flex flex-col fixed inset-0 z-50 animate-slide-up pb-16 overflow-y-auto">
+            {/* Native Mobile Header bar */}
+            <header className="sticky top-0 z-40 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
+              <button 
+                onClick={() => setSelectedProduct(null)}
+                className="text-gray-700 hover:text-black transition p-1 bg-gray-50 rounded-full border-none bg-transparent"
               >
-                {isGeneratingDesc ? (
-                  <>
-                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                    Generating from Gemini...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-3.5 h-3.5" />
-                    Write Professional Copy
-                  </>
-                )}
+                <ArrowLeft className="w-6 h-6" />
               </button>
+              <span className="font-bold text-sm text-gray-800 truncate max-w-[200px]">{selectedProduct.name}</span>
+              <div className="flex items-center gap-3">
+                <button className="text-gray-700 relative p-1 bg-transparent border-none" onClick={() => { setShowCart(true); setSelectedProduct(null); }}>
+                  <CartIcon className="w-6 h-6" />
+                  {cart.length > 0 && (
+                    <span className="absolute -top-1 -right-1.5 bg-[#f53d2d] text-white font-extrabold text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
+                      {cart.length}
+                    </span>
+                  )}
+                </button>
+                <button className="text-gray-700 bg-transparent border-none">
+                  <Share2 className="w-5.5 h-5.5" />
+                </button>
+              </div>
+            </header>
 
-              {newProdDescription && (
-                <div className="bg-gray-50 p-3 rounded border border-gray-100 text-xs mt-3">
-                  <div className="font-bold text-gray-700 mb-1.5 border-b pb-1 flex justify-between items-center">
-                    <span>Generated Output:</span>
-                    <button className="text-[#f53d2d] font-bold bg-transparent border-none p-0 cursor-pointer" onClick={() => {
-                      navigator.clipboard.writeText(newProdDescription);
-                      alertToast("Copied description to clipboard!");
-                    }}>Copy</button>
-                  </div>
-                  <pre className="font-mono text-[10px] whitespace-pre-wrap leading-relaxed text-gray-600 max-h-40 overflow-y-auto bg-white p-2.5 rounded">{newProdDescription}</pre>
-                </div>
-              )}
-            </div>
-          )}
+            {/* Scrollable details view */}
+            <div className="flex-1 space-y-4 pb-6">
+              <div className="aspect-[4/3] bg-gray-50 flex items-center justify-center border-b">
+                <img src={selectedProduct.image} alt="" className="w-full h-full object-cover" />
+              </div>
 
-          {/* TAB 4: SELLER CENTRE MOBILITY */}
-          {mobileActiveTab === 'seller' && (
-            <div className="max-w-md mx-auto">
-              {!currentUser || currentUser.role !== 'seller' ? (
-                <div className="bg-white border rounded-xl p-6 text-center shadow-sm">
-                  <Store className="w-12 h-12 text-gray-300 mx-auto mb-2" />
-                  <h4 className="font-bold text-gray-800 text-sm">Become a Shopee Seller</h4>
-                  <p className="text-xs text-gray-500 mt-1 max-w-xs mx-auto">Upgrade your customer buyer profile or complete verification to begin listing custom inventory.</p>
-                  
-                  <button 
-                    onClick={() => {
-                      if (!currentUser) {
-                        setAuthMode('register');
-                        setAuthRole('seller');
-                        setShowAuthModal(true);
-                      } else {
-                        setCurrentUser(prev => ({ ...prev, role: 'seller', isVerified: false }));
-                        alertToast("Upgraded! Now submit identity verification.");
-                      }
-                    }}
-                    className="mt-4 bg-[#f53d2d] text-white font-bold text-xs px-6 py-2.5 rounded-lg shadow"
-                  >
-                    Set Up Seller Store
-                  </button>
-                </div>
-              ) : !currentUser.isVerified ? (
-                <div className="bg-white border rounded-xl p-5 shadow-sm space-y-4">
-                  <div className="bg-gradient-to-r from-red-600 to-[#f53d2d] p-4 -mx-5 -mt-5 rounded-t-xl text-white">
-                    <h3 className="font-black text-sm flex items-center gap-1.5">
-                      <ShieldCheck className="w-5 h-5" />
-                      Legal Merchant Verification
-                    </h3>
-                    <p className="text-[10px] text-red-100">Ensure compliant trading in Malaysia under PDPA 2010.</p>
-                  </div>
-
-                  <div className="space-y-3.5 text-xs">
-                    <div>
-                      <label className="block text-[10px] font-bold text-gray-500 uppercase mb-0.5">NRIC or Business License SSM ID</label>
-                      <input 
-                        type="text" 
-                        placeholder="e.g. SSM-20261022-A"
-                        className="w-full px-3 py-1.5 border rounded text-xs focus:outline-none bg-white text-gray-800"
-                        value={sellerIdNumber}
-                        onChange={(e) => setSellerIdNumber(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Upload Merchant Proof (Selfie/License)</label>
-                      <button 
-                        type="button"
-                        onClick={() => setSellerDocumentFile("my_ssm_doc_copy.jpg")}
-                        className="w-full border-2 border-dashed p-3 rounded-lg text-center text-gray-500 font-semibold text-[11px] bg-gray-50 hover:bg-gray-100"
-                      >
-                        {sellerDocumentFile ? `✓ Attached: ${sellerDocumentFile}` : "Choose Document File"}
-                      </button>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={instantApproveSeller}
-                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded shadow text-xs"
-                    >
-                      ⚡ Instant Sandbox verification
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {/* Highly Responsive Stacking Stats Dashboard for Mobile viewports */}
-                  <div className="bg-gradient-to-br from-gray-900 to-gray-800 text-white p-5 rounded-2xl shadow-xl space-y-4 border border-white/5">
-                    <div>
-                      <span className="text-[10px] font-extrabold text-orange-400 uppercase tracking-widest block">Store Hub: {currentUser.storeName}</span>
-                      <h4 className="text-lg font-black mt-1">Financial Settlement Analytics</h4>
-                    </div>
-                    
-                    {/* Responsive Flex / Grid stats rendering */}
-                    {renderSellerStatsDashboard()}
-                  </div>
-
-                  {/* List Item form */}
-                  <div className="bg-white border rounded-lg p-4 shadow-sm">
-                    <h4 className="font-bold text-xs text-gray-500 uppercase tracking-wider mb-2 border-b pb-1">Publish New Item</h4>
-                    <form onSubmit={handleAddNewProduct} className="space-y-3 text-xs">
-                      <input 
-                        type="text" 
-                        placeholder="Product Name"
-                        className="w-full px-2.5 py-1.5 border rounded bg-white text-gray-800"
-                        value={newProdName}
-                        onChange={(e) => setNewProdName(e.target.value)}
-                      />
-                      <div className="grid grid-cols-2 gap-2">
-                        <input 
-                          type="number" 
-                          placeholder="Price (RM)"
-                          className="w-full px-2.5 py-1.5 border rounded bg-white text-gray-800"
-                          value={newProdPrice}
-                          onChange={(e) => setNewProdPrice(e.target.value)}
-                        />
-                        <input 
-                          type="number" 
-                          placeholder="Stock Level"
-                          className="w-full px-2.5 py-1.5 border rounded bg-white text-gray-800"
-                          value={newProdStock}
-                          onChange={(e) => setNewProdStock(e.target.value)}
-                        />
-                      </div>
-                      <button type="submit" className="w-full bg-emerald-600 text-white py-2 rounded font-bold shadow text-xs">Publish Item</button>
-                    </form>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* TAB 5: MY ACCOUNT PROFILE (ME) */}
-          {mobileActiveTab === 'me' && (
-            <div className="max-w-md mx-auto space-y-4">
-              {currentUser ? (
-                <div className="bg-white border rounded-xl p-4 shadow-sm space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-orange-100 text-[#f53d2d] rounded-full flex items-center justify-center font-bold text-lg">
-                      {currentUser.name[0]?.toUpperCase()}
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-gray-800 text-sm">{currentUser.name}</h4>
-                      <p className="text-[10px] text-gray-400">{currentUser.email}</p>
-                    </div>
-                  </div>
-
-                  <div className="bg-gray-50 p-3 rounded-lg text-xs space-y-2 border">
-                    <div className="flex justify-between items-center text-gray-600">
-                      <span>PDPA Consent Agreement</span>
-                      <span className="text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded text-[9px] border border-emerald-100">ACTIVE</span>
-                    </div>
-                    <div className="flex justify-between items-center text-gray-600">
-                      <span>Data Encrypted (At-Rest)</span>
-                      <span className="text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded text-[9px] border border-blue-100">AES-256</span>
-                    </div>
-                  </div>
-
-                  <button 
-                    onClick={() => {
-                      setCurrentUser(null);
-                      setCart([]);
-                      alertToast("Logout successful.");
-                    }}
-                    className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs py-2 rounded transition border-none cursor-pointer"
-                  >
-                    Logout Account
-                  </button>
-                </div>
-              ) : (
-                <div className="bg-white border rounded-xl p-6 text-center shadow-sm">
-                  <User className="w-12 h-12 text-gray-300 mx-auto mb-2" />
-                  <h4 className="font-bold text-gray-800 text-sm">Join Shopee Clone</h4>
-                  <p className="text-xs text-gray-500 mt-1">Sign in or create an account to start shopping and trading securely.</p>
-                  
-                  <div className="mt-4 flex flex-col gap-2">
-                    <button 
-                      onClick={() => { setAuthMode('login'); setShowAuthModal(true); }}
-                      className="bg-[#f53d2d] text-white font-bold text-xs py-2.5 rounded-lg shadow border-none cursor-pointer"
-                    >
-                      Login Account
-                    </button>
-                    <button 
-                      onClick={() => { setAuthMode('register'); setShowAuthModal(true); }}
-                      className="bg-gray-100 text-gray-700 font-bold text-xs py-2.5 rounded-lg border border-gray-200 cursor-pointer"
-                    >
-                      Register Profile
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-        </div>
-
-        {/* Mobile Bottom Navigation Bar - Clean, sticky, touch perfect */}
-        <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-xl flex items-center justify-around py-2.5 px-2">
-          <button 
-            onClick={() => { setMobileActiveTab('home'); setCurrentTab('buyer'); }}
-            className={`flex flex-col items-center gap-1 transition-all bg-transparent border-none cursor-pointer ${mobileActiveTab === 'home' ? 'text-[#f53d2d] scale-105' : 'text-gray-400'}`}
-          >
-            <HomeIcon className="w-5 h-5" />
-            <span className="text-[9px] font-bold">Shopping</span>
-          </button>
-          <button 
-            onClick={() => setMobileActiveTab('orders')}
-            className={`flex flex-col items-center gap-1 transition-all bg-transparent border-none cursor-pointer ${mobileActiveTab === 'orders' ? 'text-[#f53d2d] scale-105' : 'text-gray-400'}`}
-          >
-            <Truck className="w-5 h-5" />
-            <span className="text-[9px] font-bold">Purchases</span>
-          </button>
-          <button 
-            onClick={() => setMobileActiveTab('ai')}
-            className={`flex flex-col items-center gap-1 transition-all bg-transparent border-none cursor-pointer ${mobileActiveTab === 'ai' ? 'text-[#f53d2d] scale-105' : 'text-gray-400'}`}
-          >
-            <Sparkles className="w-5 h-5" />
-            <span className="text-[9px] font-bold">Gemini AI</span>
-          </button>
-          <button 
-            onClick={() => { setMobileActiveTab('seller'); setCurrentTab('seller'); }}
-            className={`flex flex-col items-center gap-1 transition-all bg-transparent border-none cursor-pointer ${mobileActiveTab === 'seller' ? 'text-[#f53d2d] scale-105' : 'text-gray-400'}`}
-          >
-            <Store className="w-5 h-5" />
-            <span className="text-[9px] font-bold">Seller Hub</span>
-          </button>
-          <button 
-            onClick={() => setMobileActiveTab('me')}
-            className={`flex flex-col items-center gap-1 transition-all bg-transparent border-none cursor-pointer ${mobileActiveTab === 'me' ? 'text-[#f53d2d] scale-105' : 'text-gray-400'}`}
-          >
-            <User className="w-5 h-5" />
-            <span className="text-[9px] font-bold">Account</span>
-          </button>
-        </nav>
-
-        {/* ========================================================= */}
-        {/* SHARED MODALS FOR MOBILE SYSTEM VIEWPORTS */}
-        {/* ========================================================= */}
-        {selectedProduct && (
-          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end justify-center">
-            <div className="bg-white rounded-t-2xl w-full max-h-[85vh] overflow-y-auto p-4 flex flex-col justify-between shadow-2xl animate-slide-up pb-10">
-              <div>
-                <div className="flex justify-between items-start mb-3">
-                  <span className="bg-orange-100 text-[#f53d2d] text-[10px] font-bold px-2 py-0.5 rounded uppercase">{selectedProduct.category}</span>
-                  <X className="w-5 h-5 text-gray-400 cursor-pointer" onClick={() => setSelectedProduct(null)} />
-                </div>
-                <div className="aspect-square bg-gray-50 rounded overflow-hidden mb-3 max-w-[240px] mx-auto">
-                  <img src={selectedProduct.image} alt="" className="w-full h-full object-cover" />
-                </div>
-                <h3 className="font-extrabold text-sm text-gray-900 leading-tight mb-2">{selectedProduct.name}</h3>
-                
-                <div className="bg-orange-50/50 p-2.5 rounded-lg flex items-baseline gap-1.5 mb-3">
-                  <span className="text-xs font-bold text-[#f53d2d]">RM</span>
-                  <span className="text-xl font-black text-[#f53d2d]">{selectedProduct.price}</span>
+              {/* Price, Sale metrics & title */}
+              <div className="px-4 space-y-2">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-sm font-bold text-[#f53d2d]">RM</span>
+                  <span className="text-2xl font-black text-[#f53d2d]">{selectedProduct.price}</span>
                   <span className="text-xs text-gray-400 line-through">RM{selectedProduct.originalPrice}</span>
                 </div>
+                
+                <h2 className="text-sm font-bold text-gray-900 leading-snug">{selectedProduct.name}</h2>
+                
+                <div className="flex items-center gap-2 pt-1.5">
+                  <div className="flex items-center gap-0.5 text-xs text-amber-500 font-extrabold">
+                    <Star className="w-4.5 h-4.5 fill-current" />
+                    <span>{selectedProduct.rating}</span>
+                  </div>
+                  <span className="text-xs text-gray-300">|</span>
+                  <span className="text-xs text-gray-500">{selectedProduct.sales} sold</span>
+                </div>
+              </div>
 
-                <div className="text-xs text-gray-600 bg-gray-50 p-3 rounded-lg border leading-relaxed mb-4 whitespace-pre-wrap max-h-36 overflow-y-auto bg-white text-gray-700">
+              {/* Shop Vendor Profile Card */}
+              <div className="border-t border-b border-gray-100 bg-gray-50/50 p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-[#f53d2d]/10 text-[#f53d2d] rounded-full flex items-center justify-center font-bold text-sm">
+                    <Store className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h5 className="font-extrabold text-xs text-gray-800">{selectedProduct.seller}</h5>
+                    <p className="text-[10px] text-gray-400">Preferred+ Verified Seller</p>
+                  </div>
+                </div>
+                <button className="border border-[#f53d2d] text-[#f53d2d] px-3 py-1 rounded-md text-[10px] font-bold bg-white">
+                  Visit Shop
+                </button>
+              </div>
+
+              {/* Shipping info */}
+              <div className="px-4 py-1 text-xs space-y-2">
+                <div className="flex items-center gap-2">
+                  <Truck className="w-4 h-4 text-emerald-500" />
+                  <span className="text-emerald-600 font-bold">Free Shipping RM0 SPEND</span>
+                </div>
+                <p className="text-gray-400 text-[10px]">Estimated Delivery: 2 - 3 business days from Kuala Lumpur</p>
+              </div>
+
+              {/* Product Description */}
+              <div className="px-4 border-t border-gray-100 pt-4 space-y-2">
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Product Specifications</span>
+                <div className="bg-gray-50 p-3.5 rounded-xl border text-xs text-gray-600 leading-relaxed font-sans whitespace-pre-wrap">
                   {selectedProduct.description}
                 </div>
               </div>
+            </div>
 
-              <div className="flex justify-between items-center text-xs mb-3 border-t pt-3">
-                <span className="text-gray-500">Merchant Store: {selectedProduct.seller}</span>
-                <span className="font-bold text-emerald-600">Stock: {selectedProduct.stock} units</span>
+            {/* Sticky Native Bottom Bar */}
+            <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-100 py-2.5 px-4 flex items-center justify-between gap-3 shadow-lg">
+              <div className="flex items-center gap-4 text-gray-500 text-xs">
+                <button className="flex flex-col items-center gap-0.5 bg-transparent border-none">
+                  <MessageSquare className="w-4.5 h-4.5 text-orange-600" />
+                  <span className="text-[9px]">Chat Now</span>
+                </button>
+                <div className="w-px h-6 bg-gray-200"></div>
+                <button 
+                  onClick={() => addToCart(selectedProduct)}
+                  className="flex flex-col items-center gap-0.5 bg-transparent border-none"
+                >
+                  <CartIcon className="w-4.5 h-4.5 text-orange-600" />
+                  <span className="text-[9px]">Add To Cart</span>
+                </button>
+              </div>
+              
+              <button 
+                onClick={() => { addToCart(selectedProduct); setSelectedProduct(null); setShowCart(true); }}
+                className="flex-1 bg-[#f53d2d] text-white py-2.5 rounded-xl font-bold text-xs tracking-wider shadow-md border-none cursor-pointer"
+              >
+                BUY NOW
+              </button>
+            </div>
+          </div>
+        ) : (
+          /* Standard Mobile App Tabs */
+          <>
+            {/* Mobile Header: Clean Floating search, no nested topbars */}
+            <header className="sticky top-0 z-40 bg-[#f53d2d] text-white shadow-md px-4 py-3 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2" onClick={() => setMobileActiveTab('home')}>
+                <div className="bg-white text-[#f53d2d] px-2 py-0.5 rounded font-black text-lg tracking-tighter">S</div>
+                <span className="font-extrabold text-sm uppercase tracking-wider">Shopee</span>
+              </div>
+
+              <div className="flex-1 max-w-xs relative">
+                <div className="flex bg-white/15 backdrop-blur rounded-lg p-1.5 items-center">
+                  <Search className="w-3.5 h-3.5 text-orange-200 ml-1.5 mr-2" />
+                  <input 
+                    type="text" 
+                    placeholder="Search products..."
+                    className="w-full bg-transparent text-white placeholder-orange-200 text-xs focus:outline-none"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                  {searchQuery && (
+                    <X className="w-3.5 h-3.5 text-white/70 cursor-pointer mr-1" onClick={() => setSearchQuery('')} />
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 relative">
+                <div className="relative p-1 animate-none bg-transparent border-none cursor-pointer" onClick={() => setShowCart(true)}>
+                  <CartIcon className="w-5.5 h-5.5 text-white" />
+                  {cart.length > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-yellow-400 text-[#d0011b] font-black text-[9px] rounded-full w-4 h-4 flex items-center justify-center border border-[#f53d2d]">
+                      {cart.length}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </header>
+
+            {/* Dynamic Mobile Tab Screen Render */}
+            <div className="flex-1 px-3 py-3">
+              
+              {/* TAB 1: HOME SHOPPING MALL */}
+              {mobileActiveTab === 'home' && (
+                <div>
+                  {/* Premium App Onboarding introduction Banner */}
+                  {renderAppIntroductionBanner()}
+
+                  {/* Campaign Banners */}
+                  <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-lg p-4 text-white relative overflow-hidden min-h-[110px] flex flex-col justify-between mb-4 shadow">
+                    <div>
+                      <span className="bg-yellow-400 text-red-950 text-[9px] font-black uppercase px-2 py-0.5 rounded">Mega Campaign</span>
+                      <h3 className="text-base font-extrabold mt-1">FREE SHIPPING RM0 SPEND!</h3>
+                    </div>
+                    <div className="flex gap-1.5 z-10">
+                      <button className="bg-white text-red-600 font-bold px-2.5 py-1 rounded text-[9px] shadow border-none cursor-pointer">Shop Now</button>
+                      <button className="bg-white/20 border border-white/30 text-white font-bold px-2.5 py-1 rounded text-[9px]">Vouchers</button>
+                    </div>
+                    <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-yellow-300/20 rounded-full blur-lg"></div>
+                  </div>
+
+                  {/* Flash Sales with timers */}
+                  <div className="bg-white rounded-lg p-3 mb-4 shadow-sm border border-orange-100 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[#f53d2d] font-black italic text-sm tracking-wider">⚡ FLASH SALE</span>
+                      <div className="flex items-center gap-0.5 font-mono">
+                        <span className="bg-gray-900 text-white text-[9px] px-1 py-0.5 rounded font-bold">{String(countdown.hrs).padStart(2, '0')}</span>
+                        <span className="text-gray-900 font-bold text-[9px]">:</span>
+                        <span className="bg-gray-900 text-white text-[9px] px-1 py-0.5 rounded font-bold">{String(countdown.mins).padStart(2, '0')}</span>
+                        <span className="text-gray-900 font-bold text-[9px]">:</span>
+                        <span className="bg-gray-900 text-white text-[9px] px-1.5 py-0.5 rounded">{String(countdown.secs).padStart(2, '0')}</span>
+                      </div>
+                    </div>
+                    <span className="text-[10px] text-orange-600 font-semibold flex items-center">All deals <ChevronRight className="w-3.5 h-3.5" /></span>
+                  </div>
+
+                  {/* Categories Pills */}
+                  <div className="flex gap-1.5 overflow-x-auto pb-3 scrollbar-none">
+                    {['All', 'Electronics', 'Fashion', 'Beauty', 'Home & Living'].map(cat => (
+                      <button
+                        key={cat}
+                        onClick={() => setSelectedCategory(cat)}
+                        className={`px-3 py-1 rounded-full text-xs font-semibold border whitespace-nowrap transition-all cursor-pointer ${selectedCategory === cat ? 'bg-[#f53d2d] border-[#f53d2d] text-white shadow-sm' : 'bg-white text-gray-500 border-gray-200'}`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Grid Products */}
+                  <div className="grid grid-cols-2 gap-2 mb-6">
+                    {filteredProducts.map(product => {
+                      const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+                      return (
+                        <div 
+                          key={product.id} 
+                          className="bg-white rounded border border-gray-100 p-2 flex flex-col justify-between relative shadow-sm"
+                          onClick={() => setSelectedProduct(product)}
+                        >
+                          {discount > 0 && (
+                            <div className="absolute top-0 right-0 bg-[#ffd13f] text-[#f53d2d] text-[8px] font-black px-1 py-0.5 rounded-bl">
+                              {discount}% OFF
+                            </div>
+                          )}
+                          <div className="aspect-square bg-gray-50 rounded overflow-hidden mb-1.5">
+                            <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                          </div>
+                          <h4 className="text-[11px] text-gray-800 line-clamp-2 leading-tight font-medium mb-1">{product.name}</h4>
+                          <div>
+                            <div className="flex items-baseline gap-1">
+                              <span className="text-[9px] text-[#f53d2d] font-bold">RM</span>
+                              <span className="text-sm font-bold text-[#f53d2d]">{product.price}</span>
+                            </div>
+                            <div className="flex items-center justify-between text-[8px] text-gray-400 mt-1 border-t border-gray-50 pt-1">
+                              <span>⭐ {product.rating}</span>
+                              <span>{product.sales} sold</span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Mobile responsive bottom footer integration (Solves missing footer on mobile!) */}
+                  {renderResponsiveFooterInfo()}
+                </div>
+              )}
+
+              {/* TAB 2: LOGISTICS TRACKER */}
+              {mobileActiveTab === 'orders' && (
+                <div className="max-w-md mx-auto mb-6">
+                  <h3 className="font-extrabold text-base text-gray-800 flex items-center gap-2 mb-3">
+                    <Truck className="w-5 h-5 text-[#f53d2d]" />
+                    My Purchases ({myOrders.length})
+                  </h3>
+                  
+                  {myOrders.length === 0 ? (
+                    <div className="bg-white rounded-lg p-8 text-center border">
+                      <Package className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+                      <h4 className="font-bold text-gray-700 text-sm">No Orders Found</h4>
+                      <p className="text-xs text-gray-400">Checkout products in your cart to see live tracking maps.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4 mb-6">
+                      {myOrders.map(order => (
+                        <div key={order.id} className="bg-white border rounded-lg p-3 shadow-sm">
+                          <div className="flex justify-between items-center pb-2 border-b border-gray-100 text-[11px]">
+                            <span className="font-bold text-gray-700">{order.id}</span>
+                            <span className="bg-orange-100 text-orange-800 px-2 py-0.5 rounded font-black uppercase text-[8px]">{order.status}</span>
+                          </div>
+                          <div className="py-2.5 space-y-2">
+                            {order.items.map((item, idx) => (
+                              <div key={idx} className="flex gap-2 text-xs">
+                                <img src={item.image} className="w-10 h-10 object-cover rounded border" alt="" />
+                                <div className="flex-1 min-w-0">
+                                  <h5 className="font-bold text-gray-800 truncate">{item.name}</h5>
+                                  <p className="text-[10px] text-gray-400">Qty: {item.quantity}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="bg-gray-50 p-2 rounded text-[10px] text-gray-500 border border-gray-100">
+                            <div className="flex justify-between items-center font-bold text-gray-700 mb-1">
+                              <span>Shopee Express Logistics</span>
+                              <span className="text-emerald-600">Expected: {order.estimatedArrival}</span>
+                            </div>
+                            <p>Status: Merchant packed parcel, awaiting courier pickup at central sorting hub.</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Mobile responsive bottom footer integration */}
+                  {renderResponsiveFooterInfo()}
+                </div>
+              )}
+
+              {/* TAB 3: GEMINI AI HELPER */}
+              {mobileActiveTab === 'ai' && (
+                <div className="max-w-md mx-auto space-y-4 mb-6">
+                  <div className="bg-white rounded-lg border p-4 shadow-sm space-y-4">
+                    <div className="flex items-center gap-1.5 text-sm font-bold text-orange-800">
+                      <Sparkles className="w-5 h-5 text-[#f53d2d] fill-current animate-pulse" />
+                      <span>Gemini Copywriting Companion</span>
+                    </div>
+                    <p className="text-xs text-gray-500">Provide bullet points or specifications below to let Gemini instantly draft high-converting Shopee descriptions!</p>
+                    
+                    <textarea 
+                      placeholder="e.g. noise-canceling, RGB lights, soft leather cushions, 1 year warranty"
+                      value={aiPrompt}
+                      onChange={(e) => setAiPrompt(e.target.value)}
+                      className="w-full p-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-orange-500 font-medium bg-white text-gray-800"
+                      rows="3"
+                    ></textarea>
+
+                    <button
+                      onClick={generateAIDescription}
+                      disabled={isGeneratingDesc}
+                      className="w-full bg-[#f53d2d] hover:bg-orange-600 text-white font-bold text-xs py-2.5 rounded-lg shadow-md transition flex items-center justify-center gap-1.5 cursor-pointer border-none"
+                    >
+                      {isGeneratingDesc ? (
+                        <>
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                          Generating from Gemini...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-3.5 h-3.5" />
+                          Write Professional Copy
+                        </>
+                      )}
+                    </button>
+
+                    {newProdDescription && (
+                      <div className="bg-gray-50 p-3 rounded border border-gray-100 text-xs mt-3">
+                        <div className="font-bold text-gray-700 mb-1.5 border-b pb-1 flex justify-between items-center">
+                          <span>Generated Output:</span>
+                          <button className="text-[#f53d2d] font-bold bg-transparent border-none p-0 cursor-pointer" onClick={() => {
+                            navigator.clipboard.writeText(newProdDescription);
+                            alertToast("Copied description to clipboard!");
+                          }}>Copy</button>
+                        </div>
+                        <pre className="font-mono text-[10px] whitespace-pre-wrap leading-relaxed text-gray-600 max-h-40 overflow-y-auto bg-white p-2.5 rounded">{newProdDescription}</pre>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Mobile responsive bottom footer integration */}
+                  {renderResponsiveFooterInfo()}
+                </div>
+              )}
+
+              {/* TAB 4: SELLER CENTRE MOBILITY */}
+              {mobileActiveTab === 'seller' && (
+                <div className="max-w-md mx-auto mb-6">
+                  {!currentUser || currentUser.role !== 'seller' ? (
+                    <div className="bg-white border rounded-xl p-6 text-center shadow-sm">
+                      <Store className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+                      <h4 className="font-bold text-gray-800 text-sm">Become a Shopee Seller</h4>
+                      <p className="text-xs text-gray-500 mt-1 max-w-xs mx-auto">Upgrade your customer buyer profile or complete verification to begin listing custom inventory.</p>
+                      
+                      <button 
+                        onClick={() => {
+                          if (!currentUser) {
+                            setAuthMode('register');
+                            setAuthRole('seller');
+                            setShowAuthModal(true);
+                          } else {
+                            setCurrentUser(prev => ({ ...prev, role: 'seller', isVerified: false }));
+                            alertToast("Upgraded! Now submit identity verification.");
+                          }
+                        }}
+                        className="mt-4 bg-[#f53d2d] text-white font-bold text-xs px-6 py-2.5 rounded-lg shadow cursor-pointer border-none"
+                      >
+                        Set Up Seller Store
+                      </button>
+                    </div>
+                  ) : !currentUser.isVerified ? (
+                    <div className="bg-white border rounded-xl p-5 shadow-sm space-y-4">
+                      <div className="bg-gradient-to-r from-red-600 to-[#f53d2d] p-4 -mx-5 -mt-5 rounded-t-xl text-white">
+                        <h3 className="font-black text-sm flex items-center gap-1.5">
+                          <ShieldCheck className="w-5 h-5" />
+                          Legal Merchant Verification
+                        </h3>
+                        <p className="text-[10px] text-red-100">Ensure compliant trading in Malaysia under PDPA 2010.</p>
+                      </div>
+
+                      <div className="space-y-3.5 text-xs">
+                        <div>
+                          <label className="block text-[10px] font-bold text-gray-500 uppercase mb-0.5">NRIC or Business License SSM ID</label>
+                          <input 
+                            type="text" 
+                            placeholder="e.g. SSM-20261022-A"
+                            className="w-full px-3 py-1.5 border rounded text-xs focus:outline-none bg-white text-gray-800"
+                            value={sellerIdNumber}
+                            onChange={(e) => setSellerIdNumber(e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Upload Merchant Proof (Selfie/License)</label>
+                          <button 
+                            type="button"
+                            onClick={() => setSellerDocumentFile("my_ssm_doc_copy.jpg")}
+                            className="w-full border-2 border-dashed p-3 rounded-lg text-center text-gray-500 font-semibold text-[11px] bg-gray-50 hover:bg-gray-100 cursor-pointer"
+                          >
+                            {sellerDocumentFile ? `✓ Attached: ${sellerDocumentFile}` : "Choose Document File"}
+                          </button>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={instantApproveSeller}
+                          className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded shadow text-xs cursor-pointer border-none"
+                        >
+                          ⚡ Instant Sandbox verification
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {/* Highly Responsive Stacking Stats Dashboard for Mobile viewports */}
+                      <div className="bg-gradient-to-br from-gray-900 to-gray-800 text-white p-5 rounded-2xl shadow-xl space-y-4 border border-white/5 animate-none">
+                        <div>
+                          <span className="text-[10px] font-extrabold text-orange-400 uppercase tracking-widest block">Store Hub: {currentUser.storeName}</span>
+                          <h4 className="text-lg font-black mt-1">Financial Settlement Analytics</h4>
+                        </div>
+                        
+                        {/* Responsive Flex / Grid stats rendering */}
+                        {renderSellerStatsDashboard()}
+                      </div>
+
+                      {/* List Item form */}
+                      <div className="bg-white border rounded-lg p-4 shadow-sm">
+                        <h4 className="font-bold text-xs text-gray-500 uppercase tracking-wider mb-2 border-b pb-1">Publish New Item</h4>
+                        <form onSubmit={handleAddNewProduct} className="space-y-3 text-xs">
+                          <input 
+                            type="text" 
+                            placeholder="Product Name"
+                            className="w-full px-2.5 py-1.5 border rounded bg-white text-gray-800 focus:outline-none"
+                            value={newProdName}
+                            onChange={(e) => setNewProdName(e.target.value)}
+                          />
+                          <div className="grid grid-cols-2 gap-2">
+                            <input 
+                              type="number" 
+                              placeholder="Price (RM)"
+                              className="w-full px-2.5 py-1.5 border rounded bg-white text-gray-800 focus:outline-none"
+                              value={newProdPrice}
+                              onChange={(e) => setNewProdPrice(e.target.value)}
+                            />
+                            <input 
+                              type="number" 
+                              placeholder="Stock Level"
+                              className="w-full px-2.5 py-1.5 border rounded bg-white text-gray-800 focus:outline-none"
+                              value={newProdStock}
+                              onChange={(e) => setNewProdStock(e.target.value)}
+                            />
+                          </div>
+                          <button type="submit" className="w-full bg-emerald-600 text-white py-2 rounded font-bold shadow text-xs cursor-pointer border-none">Publish Item</button>
+                        </form>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Mobile responsive bottom footer integration */}
+                  <div className="mt-4">
+                    {renderResponsiveFooterInfo()}
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 5: MY ACCOUNT PROFILE (ME) */}
+              {mobileActiveTab === 'me' && (
+                <div className="max-w-md mx-auto space-y-4 mb-6">
+                  {currentUser ? (
+                    <div className="bg-white border rounded-xl p-4 shadow-sm space-y-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-orange-100 text-[#f53d2d] rounded-full flex items-center justify-center font-bold text-lg border shadow-sm">
+                          {currentUser.name[0]?.toUpperCase()}
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-gray-800 text-sm">{currentUser.name}</h4>
+                          <p className="text-[10px] text-gray-400">{currentUser.email}</p>
+                        </div>
+                      </div>
+
+                      <div className="bg-gray-50 p-3 rounded-lg text-xs space-y-2 border">
+                        <div className="flex justify-between items-center text-gray-600">
+                          <span>PDPA Consent Agreement</span>
+                          <span className="text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded text-[9px] border border-emerald-100">ACTIVE</span>
+                        </div>
+                        <div className="flex justify-between items-center text-gray-600">
+                          <span>Data Encrypted (At-Rest)</span>
+                          <span className="text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded text-[9px] border border-blue-100">AES-256</span>
+                        </div>
+                      </div>
+
+                      <button 
+                        onClick={() => {
+                          setCurrentUser(null);
+                          setCart([]);
+                          alertToast("Logout successful.");
+                        }}
+                        className="w-full bg-gray-150 hover:bg-gray-200 text-gray-700 font-bold text-xs py-2.5 rounded-xl transition border-none cursor-pointer"
+                      >
+                        Logout Account
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="bg-white border rounded-xl p-6 text-center shadow-sm">
+                      <User className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+                      <h4 className="font-bold text-gray-800 text-sm">Join Shopee Clone</h4>
+                      <p className="text-xs text-gray-500 mt-1">Sign in or create an account to start shopping and trading securely.</p>
+                      
+                      <div className="mt-4 flex flex-col gap-2">
+                        <button 
+                          onClick={() => { setAuthMode('login'); setShowAuthModal(true); }}
+                          className="bg-[#f53d2d] hover:bg-red-600 text-white font-bold text-xs py-2.5 rounded-lg shadow border-none cursor-pointer"
+                        >
+                          Login Account
+                        </button>
+                        <button 
+                          onClick={() => { setAuthMode('register'); setShowAuthModal(true); }}
+                          className="bg-gray-150 text-gray-700 font-bold text-xs py-2.5 rounded-lg border border-gray-200 cursor-pointer"
+                        >
+                          Register Profile
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Mobile responsive bottom footer integration */}
+                  {renderResponsiveFooterInfo()}
+                </div>
+              )}
+
+            </div>
+
+            {/* Mobile Bottom Navigation Bar - Clean, sticky, touch perfect */}
+            <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-xl flex items-center justify-around py-2.5 px-2">
+              <button 
+                onClick={() => { setMobileActiveTab('home'); setCurrentTab('buyer'); }}
+                className={`flex flex-col items-center gap-1 transition-all bg-transparent border-none cursor-pointer ${mobileActiveTab === 'home' ? 'text-[#f53d2d] scale-105' : 'text-gray-400'}`}
+              >
+                <HomeIcon className="w-5 h-5" />
+                <span className="text-[9px] font-bold">Shopping</span>
+              </button>
+              <button 
+                onClick={() => setMobileActiveTab('orders')}
+                className={`flex flex-col items-center gap-1 transition-all bg-transparent border-none cursor-pointer ${mobileActiveTab === 'orders' ? 'text-[#f53d2d] scale-105' : 'text-gray-400'}`}
+              >
+                <Truck className="w-5 h-5" />
+                <span className="text-[9px] font-bold">Purchases</span>
+              </button>
+              <button 
+                onClick={() => setMobileActiveTab('ai')}
+                className={`flex flex-col items-center gap-1 transition-all bg-transparent border-none cursor-pointer ${mobileActiveTab === 'ai' ? 'text-[#f53d2d] scale-105' : 'text-gray-400'}`}
+              >
+                <Sparkles className="w-5 h-5" />
+                <span className="text-[9px] font-bold">Gemini AI</span>
+              </button>
+              <button 
+                onClick={() => { setMobileActiveTab('seller'); setCurrentTab('seller'); }}
+                className={`flex flex-col items-center gap-1 transition-all bg-transparent border-none cursor-pointer ${mobileActiveTab === 'seller' ? 'text-[#f53d2d] scale-105' : 'text-gray-400'}`}
+              >
+                <Store className="w-5 h-5" />
+                <span className="text-[9px] font-bold">Seller Hub</span>
+              </button>
+              <button 
+                onClick={() => setMobileActiveTab('me')}
+                className={`flex flex-col items-center gap-1 transition-all bg-transparent border-none cursor-pointer ${mobileActiveTab === 'me' ? 'text-[#f53d2d] scale-105' : 'text-gray-400'}`}
+              >
+                <User className="w-5 h-5" />
+                <span className="text-[9px] font-bold">Account</span>
+              </button>
+            </nav>
+          </>
+        )}
+
+        {/* ========================================================= */}
+        {/* MOBILE SLIDE-UP FULL SCREENS (CART, CHECKOUT, AUTH) */}
+        {/* ========================================================= */}
+        {showCart && (
+          <div className="fixed inset-0 z-50 bg-white flex flex-col animate-slide-up pb-10">
+            <header className="sticky top-0 z-40 bg-[#f53d2d] text-white px-4 py-3.5 flex items-center justify-between shadow">
+              <span className="font-bold text-sm tracking-wide">Cart Items ({cart.length})</span>
+              <X className="w-6 h-6 cursor-pointer" onClick={() => setShowCart(false)} />
+            </header>
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {cart.length === 0 ? (
+                <div className="text-center py-24 text-gray-400">
+                  <div className="text-5xl mb-3">🛒</div>
+                  <p className="text-xs">Your cart is empty. Add products to get started!</p>
+                </div>
+              ) : (
+                cart.map(item => (
+                  <div key={item.id} className="flex gap-3 p-3 bg-gray-50 rounded-xl border border-gray-150 items-center animate-none">
+                    <img src={item.image} className="w-14 h-14 rounded object-cover border" alt="" />
+                    <div className="flex-1 min-w-0">
+                      <h5 className="font-bold text-xs text-gray-800 truncate">{item.name}</h5>
+                      <p className="text-xs text-[#f53d2d] font-bold">RM {item.price}</p>
+                      <div className="flex items-center gap-1.5 mt-2">
+                        <button className="px-2 py-0.5 border bg-white rounded font-bold text-xs cursor-pointer" onClick={() => updateCartQuantity(item.id, -1)}>-</button>
+                        <span className="text-xs font-bold text-gray-700">{item.quantity}</span>
+                        <button className="px-2 py-0.5 border bg-white rounded font-bold text-xs cursor-pointer" onClick={() => updateCartQuantity(item.id, 1)}>+</button>
+                      </div>
+                    </div>
+                    <Trash2 className="w-5 h-5 text-gray-400 cursor-pointer" onClick={() => removeFromCart(item.id)} />
+                  </div>
+                ))
+              )}
+            </div>
+            <div className="p-4 border-t bg-gray-50">
+              <div className="flex justify-between items-center mb-3 text-xs">
+                <span className="text-gray-500">Shipping:</span>
+                <span className="font-bold text-emerald-600">FREE SHIPPING RM0 SPEND</span>
+              </div>
+              <div className="flex justify-between items-center mb-4 text-xs">
+                <span className="font-bold text-gray-700">Subtotal:</span>
+                <span className="text-lg font-black text-[#f53d2d]">RM {cartTotal.toFixed(2)}</span>
               </div>
               <button
-                onClick={() => { addToCart(selectedProduct); setSelectedProduct(null); }}
-                className="w-full bg-[#f53d2d] hover:bg-red-600 text-white py-3 rounded-lg font-bold shadow-lg cursor-pointer border-none"
+                onClick={handleProceedToPayment}
+                disabled={cart.length === 0}
+                className="w-full bg-[#f53d2d] text-white py-3.5 rounded-xl font-bold shadow text-xs uppercase border-none cursor-pointer"
               >
-                Add To Shopping Cart
+                Checkout and Pay
               </button>
             </div>
           </div>
         )}
 
-        {/* Shopping Cart Modal */}
-        {showCart && (
-          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex justify-end">
-            <div className="bg-white w-full max-w-sm h-full shadow-2xl flex flex-col justify-between animate-slide-in pb-10">
-              <div className="p-4 bg-[#f53d2d] text-white flex justify-between items-center">
-                <h4 className="font-bold">Cart Items ({cart.length})</h4>
-                <X className="w-5 h-5 cursor-pointer" onClick={() => setShowCart(false)} />
-              </div>
-              <div className="flex-1 overflow-y-auto p-3 space-y-3">
-                {cart.length === 0 ? (
-                  <div className="text-center py-16 text-gray-400">Your cart is empty.</div>
-                ) : (
-                  cart.map(item => (
-                    <div key={item.id} className="flex gap-2.5 p-2 bg-gray-50 rounded border items-center">
-                      <img src={item.image} className="w-12 h-12 rounded object-cover" alt="" />
-                      <div className="flex-1 min-w-0">
-                        <h5 className="font-bold text-xs text-gray-800 truncate">{item.name}</h5>
-                        <p className="text-xs text-[#f53d2d] font-bold">RM {item.price}</p>
-                        <div className="flex items-center gap-1.5 mt-1">
-                          <button className="px-1.5 py-0.5 border bg-white rounded font-bold text-xs cursor-pointer" onClick={() => updateCartQuantity(item.id, -1)}>-</button>
-                          <span className="text-xs font-bold text-gray-700">{item.quantity}</span>
-                          <button className="px-1.5 py-0.5 border bg-white rounded font-bold text-xs cursor-pointer" onClick={() => updateCartQuantity(item.id, 1)}>+</button>
-                        </div>
-                      </div>
-                      <Trash2 className="w-4 h-4 text-gray-400 cursor-pointer" onClick={() => removeFromCart(item.id)} />
-                    </div>
-                  ))
-                )}
-              </div>
-              <div className="p-4 border-t bg-gray-50">
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-xs text-gray-500">Shipping:</span>
-                  <span className="text-xs font-bold text-emerald-600">FREE SHIPPING</span>
-                </div>
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-sm font-bold text-gray-700">Subtotal:</span>
-                  <span className="text-lg font-black text-[#f53d2d]">RM {cartTotal.toFixed(2)}</span>
-                </div>
-                <button
-                  onClick={handleProceedToPayment}
-                  disabled={cart.length === 0}
-                  className="w-full bg-[#f53d2d] text-white py-3 rounded-lg font-bold shadow cursor-pointer border-none"
-                >
-                  Checkout and Pay
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Secure Payment Gateway Modal */}
         {showPaymentGateway && (
-          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end justify-center">
-            <div className="bg-white rounded-t-2xl w-full p-4 space-y-4 shadow-2xl animate-slide-up pb-10 max-h-[85vh] overflow-y-auto">
-              <div className="flex justify-between items-center border-b pb-2">
-                <h4 className="font-black text-sm text-gray-800">Secure Checkout</h4>
-                <X className="w-5 h-5 text-gray-400 cursor-pointer" onClick={() => setShowPaymentGateway(false)} />
+          <div className="fixed inset-0 z-50 bg-white flex flex-col animate-slide-up pb-10 overflow-y-auto">
+            <header className="sticky top-0 z-40 bg-gray-900 text-white px-4 py-3.5 flex items-center justify-between">
+              <h4 className="font-black text-sm">Secure Payment Gateway</h4>
+              <X className="w-5 h-5 text-gray-400 cursor-pointer" onClick={() => setShowPaymentGateway(false)} />
+            </header>
+            <form onSubmit={handleProcessPayment} className="p-4 space-y-4 text-xs flex-1">
+              <div className="bg-blue-50 p-3.5 rounded-xl border text-blue-900 font-bold flex justify-between">
+                <span>Subtotal:</span>
+                <span>RM {cartTotal.toFixed(2)}</span>
               </div>
-              <form onSubmit={handleProcessPayment} className="space-y-4 text-xs">
-                <div className="bg-blue-50 p-3 rounded-lg border text-blue-900 font-bold flex justify-between">
-                  <span>Subtotal:</span>
-                  <span>RM {cartTotal.toFixed(2)}</span>
-                </div>
 
-                {/* Premium Interactive Payment Selector */}
-                {renderPaymentMethodSelector()}
+              {renderPaymentMethodSelector()}
 
-                <button
-                  type="submit"
-                  disabled={isProcessingPayment}
-                  className="w-full bg-[#e03d2b] hover:bg-red-700 text-white font-bold py-3 rounded-lg shadow mt-2 cursor-pointer border-none"
-                >
-                  {isProcessingPayment ? "Processing Secure Payment..." : `Authorize Payment (RM ${cartTotal.toFixed(2)})`}
-                </button>
-              </form>
-            </div>
+              <button
+                type="submit"
+                disabled={isProcessingPayment}
+                className="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl shadow mt-4 border-none cursor-pointer"
+              >
+                {isProcessingPayment ? "Processing Secure Payment..." : `Authorize Payment (RM ${cartTotal.toFixed(2)})`}
+              </button>
+            </form>
           </div>
         )}
 
-        {/* Success Modal */}
+        {showAuthModal && (
+          <div className="fixed inset-0 z-50 bg-white flex flex-col animate-slide-up pb-10 overflow-y-auto">
+            <header className="sticky top-0 z-40 bg-[#f53d2d] text-white px-4 py-4 flex items-center justify-between">
+              <h4 className="font-extrabold text-sm">Account Authentication</h4>
+              <X className="w-6 h-6 text-white cursor-pointer" onClick={() => setShowAuthModal(false)} />
+            </header>
+            <form onSubmit={handleAuthSubmit} className="p-5 space-y-4 text-xs flex-1">
+              {authMode === 'register' && (
+                <div className="bg-gray-50 p-2.5 rounded-lg border flex justify-between gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setAuthRole('buyer')}
+                    className={`flex-1 py-1.5 rounded-md text-xs font-bold text-center transition border-none cursor-pointer ${authRole === 'buyer' ? 'bg-[#f53d2d] text-white shadow' : 'bg-white text-gray-500'}`}
+                  >
+                    Customer Profile
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAuthRole('seller')}
+                    className={`flex-1 py-1.5 rounded-md text-xs font-bold text-center transition border-none cursor-pointer ${authRole === 'seller' ? 'bg-gray-800 text-white shadow' : 'bg-white text-gray-500'}`}
+                  >
+                    Merchant Store
+                  </button>
+                </div>
+              )}
+
+              {authMode === 'register' && (
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-1">Your Full Name</label>
+                  <input type="text" placeholder="e.g. Rachel Tan" value={authName} onChange={(e) => setAuthName(e.target.value)} required className="w-full p-2.5 border rounded-lg bg-white text-gray-800" />
+                </div>
+              )}
+              
+              <div>
+                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-1">Email Address</label>
+                <input type="email" placeholder="Your Email Address" value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} required className="w-full p-2.5 border rounded-lg bg-white text-gray-800" />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-1">Password</label>
+                <input type="password" placeholder="Password" value={authPassword} onChange={(e) => setAuthPassword(e.target.value)} required className="w-full p-2.5 border rounded-lg bg-white text-gray-800" />
+              </div>
+              
+              {authMode === 'register' && authRole === 'seller' && (
+                <div>
+                  <label className="block text-[10px] font-bold text-orange-800 uppercase tracking-wide mb-1">Store Name</label>
+                  <input type="text" placeholder="Create Store Name" value={authStoreName} onChange={(e) => setAuthStoreName(e.target.value)} required className="w-full p-2.5 border rounded-lg bg-white text-gray-800" />
+                </div>
+              )}
+
+              {authMode === 'register' && (
+                <div className="flex items-start gap-2 pt-2 border-t text-[10px] text-gray-500">
+                  <input type="checkbox" required checked={pdpaAgreed} onChange={(e) => setPdpaAgreed(e.checked)} className="mt-0.5 accent-[#f53d2d]" />
+                  <span>I agree to Shopee's processing of my personal details under the Malaysian PDPA 2010 regulations.</span>
+                </div>
+              )}
+
+              <button type="submit" className="w-full bg-[#f53d2d] text-white py-3 rounded-lg font-bold border-none cursor-pointer">
+                {authMode === 'login' ? 'Sign In' : 'Agree & Create Account'}
+              </button>
+              <div className="text-center">
+                <button type="button" onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')} className="text-xs text-[#f53d2d] font-bold underline bg-transparent border-none cursor-pointer">
+                  {authMode === 'login' ? "Don't have an account? Sign up" : "Already have an account? Login"}
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
         {checkoutSuccess && (
           <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur flex items-center justify-center p-4">
-            <div className="bg-white rounded-lg p-5 text-center max-w-xs w-full shadow-2xl">
+            <div className="bg-white rounded-xl p-5 text-center max-w-xs w-full shadow-2xl animate-none">
               <CheckCircle className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
               <h3 className="font-bold text-gray-900">Order Placed Successfully!</h3>
               <p className="text-[11px] text-gray-500 mt-1">Sellers have received your payment split details and are packing your items.</p>
-              <button onClick={() => setCheckoutSuccess(false)} className="mt-4 bg-[#f53d2d] text-white font-bold text-xs py-2 w-full rounded-lg cursor-pointer border-none">Dismiss</button>
-            </div>
-          </div>
-        )}
-
-        {/* Security Auth Modal */}
-        {showAuthModal && (
-          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end justify-center">
-            <div className="bg-white rounded-t-2xl w-full p-4 space-y-4 shadow-2xl animate-slide-up pb-10">
-              <div className="flex justify-between items-center">
-                <h4 className="font-extrabold text-sm text-gray-800">Authentication Portal</h4>
-                <X className="w-5 h-5 text-gray-400 cursor-pointer" onClick={() => setShowAuthModal(false)} />
-              </div>
-              <form onSubmit={handleAuthSubmit} className="space-y-3.5 text-xs">
-                {authMode === 'register' && (
-                  <input type="text" placeholder="Your Name" value={authName} onChange={(e) => setAuthName(e.target.value)} required className="w-full p-2 border rounded animate-none bg-white text-gray-800" />
-                )}
-                <input type="email" placeholder="Your Email Address" value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} required className="w-full p-2 border rounded bg-white text-gray-800" />
-                <input type="password" placeholder="Password" value={authPassword} onChange={(e) => setAuthPassword(e.target.value)} required className="w-full p-2 border rounded bg-white text-gray-800" />
-                
-                {authMode === 'register' && authRole === 'seller' && (
-                  <input type="text" placeholder="Create Store Name" value={authStoreName} onChange={(e) => setAuthStoreName(e.target.value)} required className="w-full p-2 border rounded bg-white text-gray-800" />
-                )}
-
-                <button type="submit" className="w-full bg-[#f53d2d] text-white py-2.5 rounded font-bold cursor-pointer border-none">Submit</button>
-                <div className="text-center">
-                  <button type="button" onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')} className="text-xs text-[#f53d2d] font-bold underline bg-transparent border-none cursor-pointer">
-                    {authMode === 'login' ? "Don't have an account? Sign up" : "Already have an account? Login"}
-                  </button>
-                </div>
-              </form>
+              <button onClick={() => setCheckoutSuccess(false)} className="mt-4 bg-[#f53d2d] text-white font-bold text-xs py-2 w-full rounded-lg border-none cursor-pointer">Dismiss</button>
             </div>
           </div>
         )}
@@ -1430,7 +1657,7 @@ export default function App() {
                     setCart([]);
                     alertToast("Logged out successfully.");
                   }} 
-                  className="text-[10px] text-red-200 underline hover:text-white bg-transparent border-none cursor-pointer"
+                  className="text-[10px] text-red-200 underline hover:text-white bg-transparent border-none cursor-pointer animate-none"
                 >
                   Log Out
                 </button>
@@ -1511,7 +1738,7 @@ export default function App() {
               {currentUser && currentUser.role !== 'seller' && (
                 <button 
                   onClick={() => setShowOrdersModal(true)}
-                  className="hidden md:flex items-center gap-1.5 text-white hover:text-yellow-200 transition text-xs font-semibold bg-transparent border-none cursor-pointer"
+                  className="hidden md:flex items-center gap-1.5 text-white hover:text-yellow-200 transition text-xs font-semibold bg-transparent border-none cursor-pointer animate-none"
                 >
                   <Truck className="w-5 h-5" />
                   My Purchases
@@ -1540,6 +1767,9 @@ export default function App() {
         {/* BUYER TAB */}
         {currentTab === 'buyer' && (
           <div>
+            {/* Premium App Onboarding introduction Banner */}
+            {renderAppIntroductionBanner()}
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
               <div className="md:col-span-2 bg-gradient-to-r from-orange-500 to-red-600 rounded-lg p-6 text-white relative overflow-hidden h-48 flex flex-col justify-between shadow-sm relative">
                 <div>
@@ -1655,7 +1885,7 @@ export default function App() {
                     placeholder="Enter NRIC or SSM Number" 
                     value={sellerIdNumber} 
                     onChange={(e) => setSellerIdNumber(e.target.value)} 
-                    className="w-full p-2 bg-white border border-gray-200 rounded text-xs focus:outline-none" 
+                    className="w-full p-2 bg-white border border-gray-200 rounded text-xs focus:outline-none bg-white text-gray-800" 
                   />
                   <button 
                     type="button" 
@@ -1702,7 +1932,7 @@ export default function App() {
                       <div className="bg-orange-50 p-3 rounded border border-orange-100 space-y-2">
                         <span className="text-xs font-bold text-orange-800 flex items-center gap-1.5"><Sparkles className="w-4 h-4 text-[#f53d2d] fill-current" /> Gemini Assistant AI</span>
                         <textarea placeholder="e.g. noise-canceling, red design, immersive" rows="2" className="w-full p-2 bg-white text-xs border border-orange-200 rounded text-gray-800 focus:outline-none" value={aiPrompt} onChange={(e) => setAiPrompt(e.target.value)} />
-                        <button type="button" onClick={generateAIDescription} className="w-full bg-[#f53d2d] hover:bg-orange-600 text-white font-bold text-xs py-1.5 rounded cursor-pointer border-none">{isGeneratingDesc ? 'Generating...' : 'Generate Description Copy'}</button>
+                        <button type="button" onClick={generateAIDescription} className="w-full bg-[#f53d2d] text-white font-bold text-xs py-1.5 rounded cursor-pointer border-none">{isGeneratingDesc ? 'Generating...' : 'Generate Description Copy'}</button>
                       </div>
 
                       <div className="bg-amber-50 p-3 rounded border border-amber-100">
@@ -1723,7 +1953,7 @@ export default function App() {
                     </h3>
                     <div className="space-y-4 max-h-[600px] overflow-y-auto">
                       {products.map(p => (
-                        <div key={p.id} className="flex gap-4 p-3 bg-gray-50 rounded border items-center">
+                        <div key={p.id} className="flex gap-4 p-3 bg-gray-50 rounded border items-center animate-none">
                           <img src={p.image} className="w-12 h-12 object-cover rounded border" alt="" />
                           <div className="flex-1">
                             <h4 className="font-bold text-sm text-gray-800">{p.name}</h4>
@@ -1746,386 +1976,8 @@ export default function App() {
 
       </main>
 
-      {/* Cart Modal */}
-      {showCart && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex justify-end">
-          <div className="bg-white w-full max-w-md h-full shadow-2xl flex flex-col justify-between animate-slide-in">
-            <div className="p-4 bg-[#f53d2d] text-white flex justify-between items-center">
-              <h3 className="font-bold text-lg">My Shopping Cart ({cart.length})</h3>
-              <X className="w-6 h-6 cursor-pointer" onClick={() => setShowCart(false)} />
-            </div>
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              {cart.map(item => (
-                <div key={item.id} className="flex gap-3 bg-gray-50 p-3 rounded border">
-                  <img src={item.image} className="w-12 h-12 rounded object-cover" alt="" />
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-bold text-xs text-gray-800 truncate">{item.name}</h4>
-                    <span className="text-xs font-bold text-[#f53d2d]">RM {item.price}</span>
-                    <div className="flex items-center gap-1.5 mt-2">
-                      <button className="px-2 py-0.5 border bg-white rounded font-bold cursor-pointer" onClick={() => updateCartQuantity(item.id, -1)}>-</button>
-                      <span className="text-xs font-bold">{item.quantity}</span>
-                      <button className="px-2 py-0.5 border bg-white rounded font-bold cursor-pointer" onClick={() => updateCartQuantity(item.id, 1)}>+</button>
-                    </div>
-                  </div>
-                  <Trash2 className="w-4 h-4 text-gray-400 cursor-pointer self-center" onClick={() => removeFromCart(item.id)} />
-                </div>
-              ))}
-            </div>
-            <div className="p-4 border-t bg-gray-50">
-              <div className="flex justify-between items-center mb-4">
-                <span className="font-bold text-gray-700">Subtotal Amount:</span>
-                <span className="text-xl font-extrabold text-[#f53d2d]">RM {cartTotal.toFixed(2)}</span>
-              </div>
-              <button onClick={handleProceedToPayment} className="w-full bg-[#f53d2d] hover:bg-red-600 text-white py-3 rounded-lg font-bold shadow cursor-pointer border-none">Proceed to Payment</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Payment gateway (Desktop View) */}
-      {showPaymentGateway && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl w-full max-w-lg overflow-hidden shadow-2xl relative">
-            <div className="bg-gray-900 text-white p-5 flex justify-between items-center">
-              <h3 className="font-extrabold text-lg flex items-center gap-2">
-                <CreditCard className="w-5 h-5 text-emerald-400" /> Secure Checkout
-              </h3>
-              <X className="w-6 h-6 text-gray-400 cursor-pointer" onClick={() => setShowPaymentGateway(false)} />
-            </div>
-            <form onSubmit={handleProcessPayment} className="p-6 space-y-5">
-              <div className="bg-blue-50 p-4 rounded border text-blue-900 font-bold flex justify-between text-sm">
-                <span>Total Due:</span>
-                <span>RM {cartTotal.toFixed(2)}</span>
-              </div>
-
-              {/* Desktop Render Payment Selector */}
-              {renderPaymentMethodSelector()}
-
-              <button type="submit" disabled={isProcessingPayment} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-md transition flex justify-center items-center gap-2 mt-2 cursor-pointer border-none">
-                {isProcessingPayment ? "Processing..." : `Pay RM {cartTotal.toFixed(2)}`}
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Logistics tracking list */}
-      {showOrdersModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl w-full max-w-2xl max-h-[80vh] overflow-hidden shadow-2xl relative flex flex-col">
-            <div className="bg-gray-50 border-b p-5 flex justify-between items-center">
-              <h3 className="font-extrabold text-lg text-gray-900 flex items-center gap-2"><Truck className="w-5 h-5 text-red-500" /> My Purchases & Logistics</h3>
-              <X className="w-5 h-5 cursor-pointer text-gray-400" onClick={() => setShowOrdersModal(false)} />
-            </div>
-            <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50">
-              {myOrders.map(order => (
-                <div key={order.id} className="bg-white border rounded-xl overflow-hidden p-4 shadow-sm space-y-3">
-                  <div className="flex justify-between items-center text-xs font-bold border-b pb-2">
-                    <span>{order.id}</span>
-                    <span className="text-emerald-600 font-black">Estimated Delivery: {order.estimatedArrival}</span>
-                  </div>
-                  {order.items.map((item, idx) => (
-                    <div key={idx} className="flex gap-3 text-xs items-center">
-                      <img src={item.image} className="w-10 h-10 rounded border object-cover" alt="" />
-                      <div className="flex-1">
-                        <h5 className="font-bold text-gray-800">{item.name}</h5>
-                        <p className="text-[10px] text-gray-400">Qty: {item.quantity}</p>
-                      </div>
-                    </div>
-                  ))}
-                  <div className="relative flex justify-between items-center mt-3 pt-3 border-t">
-                    <span className="text-[10px] text-gray-400">Logistics Status: Packed and handed over to Shopee Express Sorting Centre (Kuala Lumpur Hub).</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Premium Authentication Portal Modal (Restored from image_88fde7.png) */}
-      {showAuthModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-2xl border border-gray-100 max-w-[430px] w-full overflow-hidden relative">
-            
-            {/* Real Shopee Header style */}
-            <div className="bg-[#f53d2d] text-white p-5 pr-12 relative">
-              <div className="flex items-center gap-2.5">
-                <Lock className="w-5 h-5 text-yellow-300" />
-                <h3 className="font-extrabold text-[17px] tracking-wide">
-                  {authMode === 'login' ? 'Sign In to Shopee' : 'Create Account'}
-                </h3>
-              </div>
-              <p className="text-[11px] text-red-100 mt-1 leading-normal">Secure buyer & seller portal access</p>
-              
-              <button 
-                onClick={() => setShowAuthModal(false)}
-                className="absolute top-4 right-4 text-white/80 hover:text-white transition p-1 hover:bg-white/10 rounded-full bg-transparent border-none cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Auth Form with Legal Consent */}
-            <form onSubmit={handleAuthSubmit} className="p-6 space-y-4">
-              
-              {/* Profile Role Toggle (Register Only) */}
-              {authMode === 'register' && (
-                <div className="bg-gray-50 p-2 rounded-lg border border-gray-200 flex justify-between gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setAuthRole('buyer')}
-                    className={`flex-1 py-1.5 rounded-md text-xs font-bold text-center transition cursor-pointer border-none ${authRole === 'buyer' ? 'bg-[#f53d2d] text-white shadow' : 'bg-white text-gray-500'}`}
-                  >
-                    Customer Profile
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setAuthRole('seller')}
-                    className={`flex-1 py-1.5 rounded-md text-xs font-bold text-center transition cursor-pointer border-none ${authRole === 'seller' ? 'bg-gray-800 text-white shadow' : 'bg-white text-gray-500'}`}
-                  >
-                    Merchant Store
-                  </button>
-                </div>
-              )}
-
-              {authMode === 'register' && (
-                <div className="space-y-1">
-                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wide">Your Full Name</label>
-                  <input 
-                    type="text" 
-                    required
-                    placeholder="e.g. Shiyuan Tan" 
-                    value={authName} 
-                    onChange={(e) => setAuthName(e.target.value)} 
-                    className="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-red-500 text-gray-800 bg-white shadow-sm" 
-                  />
-                </div>
-              )}
-
-              <div className="space-y-1">
-                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wide">Email Address</label>
-                <input 
-                  type="email" 
-                  required
-                  placeholder="e.g. merchant@shopee.com" 
-                  value={authEmail} 
-                  onChange={(e) => setAuthEmail(e.target.value)} 
-                  className="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-red-500 text-gray-800 bg-white shadow-sm" 
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wide">Password</label>
-                <input 
-                  type="password" 
-                  required
-                  placeholder="••••••••" 
-                  value={authPassword} 
-                  onChange={(e) => setAuthPassword(e.target.value)} 
-                  className="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-red-500 text-gray-800 bg-white shadow-sm" 
-                />
-              </div>
-
-              {authMode === 'register' && authRole === 'seller' && (
-                <div className="space-y-1 bg-orange-50/50 p-3 rounded-lg border border-orange-100">
-                  <label className="block text-[10px] font-bold text-orange-800 uppercase tracking-wide">Create Custom Store Name</label>
-                  <input 
-                    type="text" 
-                    required
-                    placeholder="e.g. Supreme Electro Store" 
-                    value={authStoreName} 
-                    onChange={(e) => setAuthStoreName(e.target.value)} 
-                    className="w-full px-3 py-1.5 border border-orange-200 rounded-lg text-xs focus:outline-none focus:border-red-500 text-gray-800 bg-white shadow-sm" 
-                  />
-                </div>
-              )}
-
-              {/* PDPA Consent Toggles (Malaysian Law Compliance) */}
-              {authMode === 'register' && (
-                <div className="space-y-2 border-t pt-3 mt-1.5">
-                  <div className="flex items-start gap-2 text-[10px] text-gray-500 leading-relaxed">
-                    <input 
-                      type="checkbox" 
-                      required 
-                      id="pdpaConsentCheck"
-                      checked={pdpaAgreed} 
-                      onChange={(e) => setPdpaAgreed(e.checked)} 
-                      className="mt-0.5 accent-[#f53d2d]" 
-                    />
-                    <label htmlFor="pdpaConsentCheck" className="cursor-pointer select-none">
-                      I explicitly agree to Shopee's privacy regulations and authorize data processing under the <strong>Malaysian Personal Data Protection Act (PDPA) 2010</strong>.
-                    </label>
-                  </div>
-                </div>
-              )}
-
-              <button 
-                type="submit" 
-                className="w-full bg-[#f53d2d] hover:bg-red-600 text-white py-3 rounded-lg font-bold text-xs tracking-wider transition shadow-md cursor-pointer border-none"
-              >
-                {authMode === 'login' ? 'Sign In' : 'Agree & Create Account'}
-              </button>
-
-              <div className="text-center pt-1.5 text-xs text-gray-500">
-                {authMode === 'login' ? (
-                  <span>
-                    Don't have an account yet?{' '}
-                    <button type="button" onClick={() => setAuthMode('register')} className="text-[#f53d2d] font-bold underline bg-transparent border-none p-0 cursor-pointer">Register Now</button>
-                  </span>
-                ) : (
-                  <span>
-                    Already registered?{' '}
-                    <button type="button" onClick={() => setAuthMode('login')} className="text-[#f53d2d] font-bold underline bg-transparent border-none p-0 cursor-pointer">Sign In</button>
-                  </span>
-                )}
-              </div>
-
-              {/* Secure Testing Tip (Identical to your screenshot image_88fde7.png) */}
-              <div className="pt-3 border-t border-gray-100 text-[10px] leading-relaxed text-gray-400">
-                <span className="font-bold text-gray-500 block mb-0.5">Fast Testing Login Tip:</span>
-                Enter any email with `seller` in it (e.g. `seller-verify@gmail.com`) to instantly bypass registration with custom pre-loaded seller stores.
-              </div>
-
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Premium Product Detail Overlay (Restored from image_88fa9f.png) */}
-      {selectedProduct && (
-        <div className="fixed inset-0 z-50 bg-black/55 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-2xl border max-w-xl w-full overflow-hidden relative flex flex-col animate-slide-up">
-            
-            {/* Close button */}
-            <button 
-              onClick={() => setSelectedProduct(null)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 bg-white/80 p-1 rounded-full z-10 border shadow-sm transition"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            {/* Modal Body */}
-            <div className="overflow-y-auto max-h-[85vh] p-6 space-y-4">
-              {/* Product Cover image */}
-              <div className="aspect-video sm:aspect-[4/3] rounded-lg border overflow-hidden bg-gray-50 flex items-center justify-center relative shadow-inner">
-                <img 
-                  src={selectedProduct.image} 
-                  alt={selectedProduct.name} 
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=500&q=80";
-                  }}
-                />
-              </div>
-
-              {/* Primary Content (Title & tags) */}
-              <div className="space-y-2">
-                <span className="inline-block text-[11px] bg-orange-100 text-[#f53d2d] font-bold px-2 py-0.5 rounded uppercase tracking-wider">
-                  {selectedProduct.category}
-                </span>
-                
-                <h3 className="font-extrabold text-lg text-gray-900 leading-snug">
-                  {selectedProduct.name}
-                </h3>
-
-                {/* Ratings block */}
-                <div className="flex items-center gap-1 text-xs text-amber-500 font-bold border-b pb-3 border-gray-100">
-                  <Star className="w-3.5 h-3.5 fill-current" />
-                  <span>{selectedProduct.rating}</span>
-                  <span className="text-gray-300 font-light mx-1.5">|</span>
-                  <span className="text-gray-400 font-normal">{selectedProduct.sales} Sold already</span>
-                </div>
-              </div>
-
-              {/* Pricing banner */}
-              <div className="bg-orange-50/50 p-4 rounded-xl flex items-baseline gap-2 border border-orange-100/40">
-                <span className="text-xs font-bold text-[#f53d2d]">RM</span>
-                <span className="text-2xl font-black text-[#f53d2d]">{selectedProduct.price}</span>
-                <span className="text-xs text-gray-400 line-through">RM{selectedProduct.originalPrice}</span>
-              </div>
-
-              {/* Seller details card */}
-              <div className="p-3 bg-gray-50 border rounded-xl flex justify-between items-center text-xs">
-                <div>
-                  <span className="text-[10px] text-gray-400 uppercase tracking-widest font-semibold block">Store Vendor</span>
-                  <h5 className="font-bold text-gray-800 flex items-center gap-1.5 mt-0.5">
-                    <Store className="w-3.5 h-3.5 text-[#f53d2d]" />
-                    {selectedProduct.seller}
-                  </h5>
-                </div>
-                <div className="text-right">
-                  <span className="text-[10px] text-gray-400 uppercase tracking-widest font-semibold block">Availability</span>
-                  <span className={`font-bold text-xs ${selectedProduct.stock > 0 ? 'text-emerald-600' : 'text-red-500'}`}>
-                    {selectedProduct.stock > 0 ? `${selectedProduct.stock} items ready` : 'Out of Stock'}
-                  </span>
-                </div>
-              </div>
-
-              {/* Description */}
-              <div className="space-y-1.5">
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Product Specifications</span>
-                <div className="bg-gray-50 p-3 rounded-lg border text-xs text-gray-600 font-sans leading-relaxed whitespace-pre-wrap max-h-36 overflow-y-auto bg-white text-gray-700">
-                  {selectedProduct.description}
-                </div>
-              </div>
-
-              {/* Buy action button */}
-              <button
-                onClick={() => {
-                  addToCart(selectedProduct);
-                  setSelectedProduct(null);
-                }}
-                disabled={selectedProduct.stock <= 0}
-                className="w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider text-white shadow-md flex items-center justify-center gap-2 transition bg-[#f53d2d] hover:bg-red-600 cursor-pointer border-none"
-              >
-                <CartIcon className="w-4 h-4" />
-                Add to Shopping Cart
-              </button>
-            </div>
-
-          </div>
-        </div>
-      )}
-
-      {/* Standard Desktop Web Footer */}
-      <footer className="hidden md:block bg-white border-t border-gray-200 mt-12 py-8 text-xs text-gray-500">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div>
-            <h5 className="font-bold text-gray-700 mb-3 uppercase">Customer Service</h5>
-            <ul className="space-y-1.5">
-              <li className="hover:underline cursor-pointer">Help Centre</li>
-              <li className="hover:underline cursor-pointer">Shopee Coins</li>
-              <li className="hover:underline cursor-pointer">How To Buy</li>
-              <li className="hover:underline cursor-pointer">How To Sell</li>
-              <li className="hover:underline cursor-pointer">Contact Us</li>
-            </ul>
-          </div>
-          <div>
-            <h5 className="font-bold text-gray-700 mb-3 uppercase">About Shopee</h5>
-            <ul className="space-y-1.5">
-              <li className="hover:underline cursor-pointer">About Us</li>
-              <li className="hover:underline cursor-pointer">Careers</li>
-              <li className="hover:underline cursor-pointer">Privacy Policy</li>
-              <li className="hover:underline cursor-pointer">Shopee Mall</li>
-              <li className="hover:underline cursor-pointer">Seller Centre</li>
-            </ul>
-          </div>
-          <div>
-            <h5 className="font-bold text-gray-700 mb-3 uppercase">Payment Methods</h5>
-            <div className="grid grid-cols-3 gap-2">
-              <span className="border p-2 text-center rounded font-bold text-gray-600 hover:border-orange-500 cursor-pointer">VISA</span>
-              <span className="border p-2 text-center rounded font-bold text-gray-600 hover:border-orange-500 cursor-pointer">SPayLater</span>
-              <span className="border p-2 text-center rounded font-bold text-gray-600 hover:border-orange-500 cursor-pointer">FPX</span>
-            </div>
-          </div>
-          <div>
-            <h5 className="font-bold text-gray-700 mb-3 uppercase">Download Shopee App</h5>
-            <p className="mb-2 leading-relaxed">Scan QR code to install Shopee clone app instantly to claim your RM15 welcome voucher!</p>
-          </div>
-        </div>
-      </footer>
+      {/* Desktop Shopee Style Bottom Info Header/Footer */}
+      {renderResponsiveFooterInfo()}
 
     </div>
   );
